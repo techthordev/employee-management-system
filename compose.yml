@@ -1,0 +1,25 @@
+services:
+  postgres:
+    image: postgres:18-alpine
+    container_name: employee-management-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: employee_management
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - ./database/init:/docker-entrypoint-initdb.d/init:Z
+      - ./database/schema:/docker-entrypoint-initdb.d/schema:Z
+      - ./database/data:/docker-entrypoint-initdb.d/data:Z
+      - employee-management-data:/var/lib/postgresql/data:Z
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d employee_management"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  employee-management-data:
+    name: employee-management-data
