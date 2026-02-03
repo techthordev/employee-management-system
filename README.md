@@ -227,7 +227,7 @@ The application is designed to run unchanged in:
 * [x] Request validation (@Valid)
 * [x] Global exception handling (`@ControllerAdvice`)
 * [x] OpenAPI / Swagger configuration
-* [ ] Flyway database migrations
+* [x] Flyway database migrations (V1 initial schema)
 
 ### Phase 2 — Security
 
