@@ -5,10 +5,10 @@ import br.com.techthordev.employee_management_system.entity.Employee;
 import br.com.techthordev.employee_management_system.exception.ResourceNotFoundException;
 import br.com.techthordev.employee_management_system.repository.EmployeeRepository;
 import br.com.techthordev.employee_management_system.service.EmployeeService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
@@ -40,11 +40,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public List<EmployeeDTO> getAllEmployees() {
-        return employeeRepository.findAll()
-                .stream()
-                .map(this::mapToDto)
-                .collect(Collectors.toList());
+    public Page<EmployeeDTO> getAllEmployees(Pageable pageable) {
+        return employeeRepository.findAll(pageable)
+                .map(this::mapToDto);
     }
 
     @Override
