@@ -95,18 +95,32 @@ Controller  →  Service  →  Repository  →  Database
 
 ## 🧠 Frontend Architecture (Angular 21+)
 
-The frontend is implemented using **Angular 21+ with a Signals-first approach**.
+The frontend is implemented using **Angular 21+ with a Signals-first architecture**.
 
-### State Management Strategy
+### Signals-first Philosophy
 
-* **Angular Signals** for local and shared UI state
-* **RxJS** used only for:
+Angular **Signals** are used as the primary state management mechanism:
 
-  * HTTP requests
-  * async streams
-* No global state libraries unless strictly necessary
+* Component state is modeled using **Signals**
+* Derived state uses **computed signals**
+* Side effects are handled via **effects**
 
-This reflects **current Angular best practices** and avoids unnecessary complexity.
+This approach:
+
+* removes unnecessary RxJS complexity
+* improves readability and predictability
+* reflects the **current recommended Angular direction**
+
+### Role of RxJS
+
+RxJS is intentionally limited to:
+
+* HTTP communication
+* truly asynchronous streams
+
+There is **no global state library** unless strictly required.
+
+This reflects **real-world Angular architecture in modern teams** and avoids overengineering.
 
 ---
 
@@ -219,14 +233,44 @@ The application is designed to run unchanged in:
 
 ### Phase 1 — Backend Foundation
 
-* [x] Employee domain model
-* [x] Repository layer
-* [x] Service layer
-* [x] REST controllers
-* [x] DTO-based API contracts
+* [x] Employee domain model (JPA)
+
+* [x] Repository layer (Spring Data JPA)
+
+* [x] Service layer with DTO mapping
+
+* [x] REST controllers (explicit, no Spring Data REST)
+
+* [x] Pagination & sorting via Pageable (generic query support)
+
 * [x] Request validation (@Valid)
+
+* [x] Global exception handling (@ControllerAdvice)
+
+* [x] Consistent API error model (ApiError)
+
+* [x] OpenAPI / Swagger documentation (tags, operations, responses)
+
+* [x] Spring Boot Actuator (health, readiness, info)
+
+* [x] Flyway database migrations (V1 initial schema)
+
+* [x] Employee domain model
+
+* [x] Repository layer
+
+* [x] Service layer
+
+* [x] REST controllers
+
+* [x] DTO-based API contracts
+
+* [x] Request validation (@Valid)
+
 * [x] Global exception handling (`@ControllerAdvice`)
+
 * [x] OpenAPI / Swagger configuration
+
 * [x] Flyway database migrations (V1 initial schema)
 
 ### Phase 2 — Security
