@@ -219,13 +219,15 @@ The application is designed to run unchanged in:
 
 ### Phase 1 — Backend Foundation
 
+* [x] Employee domain model
+* [x] Repository layer
+* [x] Service layer
+* [x] REST controllers
+* [x] DTO-based API contracts
+* [x] Request validation (@Valid)
+* [x] Global exception handling (`@ControllerAdvice`)
+* [x] OpenAPI / Swagger configuration
 * [ ] Flyway database migrations
-* [ ] Employee domain model
-* [ ] Repository layer
-* [ ] Service layer
-* [ ] REST controllers
-* [ ] Global exception handling
-* [ ] OpenAPI documentation
 
 ### Phase 2 — Security
 
