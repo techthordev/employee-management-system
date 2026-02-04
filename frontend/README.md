@@ -1,59 +1,88 @@
-# Frontend
+# Frontend — Employee Management System
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.2.
+This frontend is a **production-oriented Angular application** built to consume the
+Employee Management REST API defined via **OpenAPI / Swagger**.
 
-## Development server
+The focus is on **clarity, correctness, and real-world architecture** rather than
+framework magic or demo shortcuts.
 
-To start a local development server, run:
+---
 
-```bash
-ng serve
-```
+## 🎯 Purpose
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+This frontend demonstrates how a **modern Angular 21+ application** is built in
+practice when consuming a **well-defined REST API**.
 
-## Code scaffolding
+Key goals:
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+- Swagger-driven API consumption
+- Signals-first state management
+- Clear separation between UI, state, and API access
+- Enterprise-friendly structure
+- Angular Material-based UI (tables, pagination, sorting)
 
-```bash
-ng generate component component-name
-```
+---
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## 🧠 Architectural Principles
 
-```bash
-ng generate --help
-```
+### Swagger-first Development
 
-## Building
+The backend API is treated as the **single source of truth**.
 
-To build the project run:
+All frontend features are derived directly from the OpenAPI specification:
 
-```bash
-ng build
-```
+- available endpoints
+- request parameters (pagination, sorting)
+- response models
+- error structures
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+The frontend **does not invent APIs** — it implements what Swagger defines.
 
-## Running unit tests
+---
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+### Signals-first State Management
 
-```bash
-ng test
-```
+This application uses **Angular Signals** as the primary state mechanism.
 
-## Running end-to-end tests
+Signals are used for:
 
-For end-to-end (e2e) testing, run:
+- component state
+- pagination state
+- sorting state
+- loading & error states
 
-```bash
-ng e2e
-```
+Derived state is handled via **computed signals** and **effects**.
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+RxJS is intentionally limited to:
 
-## Additional Resources
+- HTTP communication
+- truly asynchronous streams
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+There is **no global state library** unless strictly required.
+
+---
+
+## 🖥️ UI & UX
+
+The UI is built using **Angular Material**.
+
+### Core UI Components
+
+- `MatTable` — employee list
+- `MatPaginator` — backend-driven pagination
+- `MatSort` — backend-driven sorting
+- `MatFormField` & `MatInput` — search input
+- `MatProgressSpinner` — loading state
+- `MatSnackBar` — error feedback
+
+The UI is designed to directly reflect backend capabilities
+(pagination, sorting, error handling).
+
+---
+
+## 🔌 Backend Integration
+
+### API Base URL
+
+During development, the frontend expects the backend to run at:
+
