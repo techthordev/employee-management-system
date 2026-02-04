@@ -1,96 +1,87 @@
-@import "tailwindcss";
-@import "@angular/material/prebuilt-themes/azure-blue.css";
-
-/* Reset background to kill all white spots */
-html, body {
+@import 'tailwindcss';
+html,
+body {
   height: 100%;
   margin: 0;
   background-color: #000000;
   color: #ffffff;
 }
-
-@theme {
-  --color-brand-dark: #004F4F;
-  --color-brand-cyan: #00FBFB;
-}
-
-/* --- Toolbar: Cyan Styling --- */
+:root {
+  --color-brand-dark: #004f4f;
+  --color-brand-cyan: #00fbfb;
+} /* --- Toolbar: Cyan Styling --- */
 .mat-toolbar.mat-primary {
   background-color: var(--color-brand-dark) !important;
   color: var(--color-brand-cyan) !important;
   display: flex;
   align-items: center;
   padding: 0 24px;
-}
-
-/* --- Table & Container --- */
-/* --- Table & Container Fix --- */
+} /* --- Table & Container --- */ /* --- Table & Container Fix --- */
 .table-wrapper {
-  width: 80% !important;   /* Set width to 80% instead of 100% */
-  max-width: 1200px;       /* Optional: upper limit for very large screens */
-  margin: 40px auto;       /* Centers the table horizontally */
-  padding: 0;              /* Remove padding to keep border clean */
+  width: 80% !important; /* Set width to 80% instead of 100% */
+  max-width: 1200px; /* Optional: upper limit for very large screens */
+  margin: 40px auto; /* Centers the table horizontally */
+  padding: 0; /* Remove padding to keep border clean */
   background-color: #000000;
-  overflow: hidden;        /* Keeps the rounded corners of the table */
+  overflow: hidden; /* Keeps the rounded corners of the table */
 }
-
 .mat-mdc-table {
   background-color: #000000 !important;
-  width: 100% !important;  /* The table fills the 80% wrapper */
+  width: 100% !important; /* The table fills the 80% wrapper */
   border: 1px solid #333333;
 }
-
 .mat-mdc-header-cell {
   background-color: #000000 !important;
   color: #ffffff !important;
   border-bottom: 2px solid #333333 !important;
 }
-
 .mat-mdc-cell {
   color: #ffffff !important;
   border-bottom: 1px solid #222222 !important;
-}
-
-/* Column Fixes */
-.mat-mdc-header-cell, .mat-mdc-cell {
+} /* Column Fixes */
+.mat-mdc-header-cell,
+.mat-mdc-cell {
   width: 180px !important;
   min-width: 180px !important;
   max-width: 180px !important;
 }
-
 .mat-column-id {
   width: 60px !important;
   min-width: 60px !important;
-}
-
-/* --- Paginator & Dropdown (The "White" fix) --- */
+} /* --- Paginator & Dropdown (The "White" fix) --- */
 .mat-mdc-paginator {
   background-color: #000000 !important;
   color: #ffffff !important;
+} /* Icons & Select text */
+.mat-mdc-select-trigger {
+  justify-content: center !important;
 }
 
-/* Icons & Select text */
+.mat-mdc-select-arrow {
+  margin-left: 4px !important;
+  margin-right: 8px;
+}
+
+.mat-mdc-select-value {
+  flex: 1;
+  text-align: center !important;
+}
 .mat-mdc-paginator .mat-mdc-select-value,
 .mat-mdc-paginator .mat-mdc-paginator-range-label,
 .mat-mdc-icon-button svg {
   color: #ffffff !important;
   fill: #ffffff !important;
-}
-
-/* Dropdown Overlay (The list 5, 10, 20 etc.) */
+} /* Dropdown Overlay (The list 5, 10, 20 etc.) */
 .cdk-overlay-pane .mat-mdc-select-panel {
   background-color: #1a1a1a !important; /* Dark background for the popup */
 }
-
 .mat-mdc-option {
   color: #ffffff !important; /* White text in the popup */
 }
-
-.mat-mdc-option:hover, .mat-mdc-option.mat-mdc-option-active {
+.mat-mdc-option:hover,
+.mat-mdc-option.mat-mdc-option-active {
   background-color: #333333 !important; /* Hover effect */
-}
-
-/* White Sort Arrows */
+} /* White Sort Arrows */
 .mat-sort-header-arrow {
   color: #ffffff !important;
 }
