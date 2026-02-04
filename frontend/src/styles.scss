@@ -1,0 +1,12 @@
+@use 'tailwindcss';
+html,
+body {
+  height: 100%;
+  margin: 0;
+  background-color: #000000;
+  color: #ffffff;
+}
+:root {
+  --color-brand-dark: #004f4f;
+  --color-brand-cyan: #00fbfb;
+} 

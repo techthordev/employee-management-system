@@ -1,11 +1,84 @@
 @use '@angular/material' as mat;
 
+// Dark Theme mit Cyan/Orange
 $dark-theme: mat.define-theme((
   color: (
     theme-type: dark,
     primary: mat.$cyan-palette,
-    accent: mat.$orange-palette,
+    tertiary: mat.$orange-palette,
   )
 ));
 
-@include mat.all-component-colors($dark-theme);
+@include mat.all-component-themes($dark-theme);
+
+// Toolbar Branding
+.mat-toolbar.mat-primary {
+  background-color: var(--color-brand-dark);
+  color: var(--color-brand-cyan);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+}
+
+// Table Wrapper
+.table-wrapper {
+  width: 80%;
+  max-width: 1200px;
+  margin: 40px auto;
+  background-color: #000;
+  overflow: hidden;
+}
+
+// Table
+.mat-mdc-table {
+  table-layout: fixed;
+  width: 100%;
+  background-color: #000;
+  border: 1px solid #333;
+}
+
+.mat-mdc-header-cell,
+.mat-mdc-cell {
+  color: #fff;
+  background-color: #000;
+  border-bottom: 1px solid #222;
+  width: 180px;
+  min-width: 180px;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mat-mdc-header-cell {
+  border-bottom: 2px solid #333;
+}
+
+.mat-column-id {
+  width: 60px;
+  min-width: 60px;
+  max-width: 60px;
+}
+
+// Paginator & Dropdown
+.mat-mdc-paginator,
+.cdk-overlay-pane .mat-mdc-select-panel {
+  background-color: #000;
+  color: #fff;
+}
+
+.mat-mdc-option {
+  color: #fff;
+}
+.mat-mdc-option:hover,
+.mat-mdc-option.mat-mdc-option-active {
+  background-color: #333;
+}
+
+.mat-sort-header-arrow,
+.mat-mdc-paginator .mat-mdc-select-value,
+.mat-mdc-paginator .mat-mdc-paginator-range-label,
+.mat-mdc-icon-button svg {
+  color: #fff;
+  fill: #fff;
+}
