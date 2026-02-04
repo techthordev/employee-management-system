@@ -1,0 +1,51 @@
+<h2 mat-dialog-title>
+  @if (data.mode === 'edit') {
+    Edit Employee
+  } @else {
+    Delete Employee
+  }
+</h2>
+
+@if (data.mode === 'edit') {
+  <mat-dialog-content>
+    <form [formGroup]="form" class="dialog-form">
+      <mat-form-field appearance="outline">
+        <mat-label>First Name</mat-label>
+        <input matInput formControlName="firstName">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Last Name</mat-label>
+        <input matInput formControlName="lastName">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email" type="email">
+      </mat-form-field>
+    </form>
+  </mat-dialog-content>
+} @else {
+  <mat-dialog-content>
+    <p>Are you sure you want to delete {{ data.employee.firstName }} {{ data.employee.lastName }}?</p>
+  </mat-dialog-content>
+}
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  @if (data.mode === 'edit') {
+    <button mat-raised-button color="primary" (click)="onConfirm()" [disabled]="form.invalid || isLoading()">
+      @if (isLoading()) {
+        Saving...
+      } @else {
+        Save
+      }
+    </button>
+  } @else {
+    <button mat-raised-button color="warn" (click)="onConfirm()" [disabled]="isLoading()">
+      @if (isLoading()) {
+        Deleting...
+      } @else {
+        Delete
+      }
+    </button>
+  }
+</mat-dialog-actions>

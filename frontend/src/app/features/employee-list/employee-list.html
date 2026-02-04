@@ -1,9 +1,15 @@
 <div class="table-wrapper mat-elevation-z7">
   <table mat-table [dataSource]="employees()" matSort (matSortChange)="onSortChange($event)">
-    <ng-container matColumnDef="id">
+    <ng-container matColumnDef="rowNumber">
+        <th mat-header-cell *matHeaderCellDef>#</th>
+        <td mat-cell *matCellDef="let employee; let i = index">
+          {{ (paginator.pageIndex * paginator.pageSize) + i + 1 }}
+        </td>
+      </ng-container>
+    <!--<ng-container matColumnDef="id">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
       <td mat-cell *matCellDef="let employee">{{ employee.id }}</td>
-    </ng-container>
+    </ng-container>-->
     <ng-container matColumnDef="firstName">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Vorname</th>
       <td mat-cell *matCellDef="let employee">{{ employee.firstName }}</td>
