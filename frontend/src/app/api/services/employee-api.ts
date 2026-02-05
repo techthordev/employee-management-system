@@ -2,14 +2,16 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Page } from '../models/page';
 import { Employee } from '../models/employee';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
+import { API_BASE_URL } from '../tokens/api.token';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EmployeeApiService {
   
-  private readonly baseUrl = 'http://localhost:8080/api/employees';
+  private readonly apiBaseUrl = inject(API_BASE_URL);
+  private readonly baseUrl = `${this.apiBaseUrl}/employees`;
 
   constructor(private http: HttpClient) {}
 

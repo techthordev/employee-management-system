@@ -32,6 +32,7 @@ The goal is to demonstrate:
 ```
 Angular SPA (Signals-first)
     │  HTTP (JSON, JWT)
+    │  API: /api/v1/*
     ▼
 Spring Boot REST API
     │  Service Layer
@@ -44,6 +45,7 @@ PostgreSQL
 ### Architectural Principles
 
 * **Explicit REST controllers** (no Spring Data REST)
+* **Versioned API endpoints** (`/api/v1/*` for backward compatibility)
 * **Clear separation of concerns** (Controller → Service → Repository)
 * **DTO-based API contracts** decoupled from persistence models
 * **Frontend state handled via Angular Signals**
@@ -51,6 +53,22 @@ PostgreSQL
 * **Database schema managed via migrations**
 
 This architecture mirrors what is commonly used in **professional backend and frontend teams**.
+
+### API Versioning Strategy
+
+The backend follows a **URI-based versioning strategy**:
+
+* All endpoints are prefixed with `/api/v1/`
+* Enables non-breaking evolution of the API
+* Follows REST best practices for API lifecycle management
+* Frontend configures base URL via dependency injection for flexibility
+
+Example endpoints:
+* `GET /api/v1/employees` - List all employees (paginated)
+* `POST /api/v1/employees` - Create new employee
+* `GET /api/v1/employees/{id}` - Get employee by ID
+* `PUT /api/v1/employees/{id}` - Update employee
+* `DELETE /api/v1/employees/{id}` - Delete employee
 
 ---
 
@@ -122,6 +140,21 @@ There is **no global state library** unless strictly required.
 
 This reflects **real-world Angular architecture in modern teams** and avoids overengineering.
 
+### Dependency Injection Patterns
+
+The frontend follows Angular DI best practices:
+
+* **InjectionToken** for API base URL configuration
+* Environment-agnostic service layer
+* Centralized provider configuration in `app.config.ts`
+* Type-safe dependency injection throughout
+
+This enables:
+
+* seamless deployment across environments (dev, staging, prod)
+* testability through provider mocking
+* clean separation of configuration from business logic
+
 ---
 
 ## 🛠️ Tech Stack
@@ -146,6 +179,7 @@ This reflects **real-world Angular architecture in modern teams** and avoids ove
 * Angular Signals
 * RxJS (HTTP & streams)
 * Angular Material (planned)
+* Standalone components architecture
 
 ### DevOps / Infrastructure
 
@@ -166,6 +200,13 @@ employee-management-system/
 │   └── README.md
 ├── frontend/             # Angular SPA (Signals-first)
 │   ├── src/
+│   │   ├── app/
+│   │   │   ├── api/
+│   │   │   │   ├── services/      # HTTP services
+│   │   │   │   ├── models/        # TypeScript interfaces
+│   │   │   │   └── tokens/        # Injection tokens
+│   │   │   ├── features/          # Feature modules
+│   │   │   └── shared/            # Shared components
 │   ├── package.json
 │   └── README.md
 ├── database/             # SQL reference & migration context
@@ -234,63 +275,86 @@ The application is designed to run unchanged in:
 ### Phase 1 — Backend Foundation
 
 * [x] Employee domain model (JPA)
-
 * [x] Repository layer (Spring Data JPA)
-
 * [x] Service layer with DTO mapping
-
 * [x] REST controllers (explicit, no Spring Data REST)
-
 * [x] Pagination & sorting via Pageable (generic query support)
-
 * [x] Request validation (@Valid)
-
 * [x] Global exception handling (@ControllerAdvice)
-
 * [x] Consistent API error model (ApiError)
-
 * [x] OpenAPI / Swagger documentation (tags, operations, responses)
-
 * [x] Spring Boot Actuator (health, readiness, info)
-
 * [x] Flyway database migrations (V1 initial schema)
-
-* [x] Employee domain model
-
-* [x] Repository layer
-
-* [x] Service layer
-
-* [x] REST controllers
-
-* [x] DTO-based API contracts
-
-* [x] Request validation (@Valid)
-
-* [x] Global exception handling (`@ControllerAdvice`)
-
-* [x] OpenAPI / Swagger configuration
-
-* [x] Flyway database migrations (V1 initial schema)
+* [x] API versioning strategy (/api/v1/*)
 
 ### Phase 2 — Security
 
 * [ ] JWT authentication
 * [ ] User & role model
 * [ ] Method-level authorization
+* [ ] Swagger UI security
 
 ### Phase 3 — Frontend
 
-* [ ] Angular application setup
-* [ ] Signals-based state management
-* [ ] Employee CRUD views
+* [x] Angular application setup (standalone architecture)
+* [x] Signals-based state management foundation
+* [x] HTTP service layer with type-safe models
+* [x] API base URL injection token pattern
+* [x] Environment-ready configuration
+* [ ] Employee list view with pagination
+* [ ] Employee create/edit forms
+* [ ] Employee detail view
+* [ ] Delete confirmation dialogs
 * [ ] JWT interceptor & guards
+* [ ] Angular Material integration
+* [ ] Error handling & user feedback
+* [ ] Loading states & spinners
 
 ### Phase 4 — Deployment
 
-* [ ] Container image
-* [ ] CI/CD pipeline
+* [ ] Container image (Dockerfile)
+* [ ] Multi-stage builds
+* [ ] CI/CD pipeline (GitHub Actions)
 * [ ] Kubernetes manifests
+* [ ] Helm charts
+* [ ] Production deployment guide
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+* Java 25+
+* Node.js 20+
+* PostgreSQL 18+ (or use Docker)
+* Maven 3.9+
+
+### Backend Setup
+
+```bash
+cd backend
+./mvnw spring-boot:run
+```
+
+API available at: `http://localhost:8080`
+Swagger UI: `http://localhost:8080/swagger-ui.html`
+
+### Frontend Setup
+
+```bash
+cd frontend
+npm install
+npm start
+```
+
+Application available at: `http://localhost:4200`
+
+### Database (Docker)
+
+```bash
+docker compose up -d postgres
+```
 
 ---
 
