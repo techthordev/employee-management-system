@@ -9,6 +9,8 @@ public interface EmployeeService {
 
     Page<EmployeeDTO> getAllEmployees(Pageable pageable);
 
+    Page<EmployeeDTO> searchEmployees(String searchTerm, Pageable pageable);
+
     EmployeeDTO getEmployeeById(Integer id);
 
     EmployeeDTO createEmployee(EmployeeDTO employeeDTO);

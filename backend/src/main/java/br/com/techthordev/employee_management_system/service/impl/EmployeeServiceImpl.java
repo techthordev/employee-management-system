@@ -46,6 +46,12 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    public Page<EmployeeDTO> searchEmployees(String searchTerm, Pageable pageable) {
+        return employeeRepository.search(searchTerm, pageable)
+                .map(this::mapToDto);
+    }
+
+    @Override
     public EmployeeDTO getEmployeeById(Integer id) {
         return employeeRepository.findById(id)
                 .map(this::mapToDto)

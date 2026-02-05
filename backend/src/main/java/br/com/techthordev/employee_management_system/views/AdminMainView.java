@@ -6,6 +6,8 @@ import br.com.techthordev.employee_management_system.service.EmployeeService;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +21,7 @@ public class AdminMainView extends VerticalLayout {
 
     private final EmployeeService employeeService;
     private final Grid<EmployeeDTO> employeeGrid = new Grid<>(EmployeeDTO.class);
+    private final TextField filterText = new TextField();
 
     // Spring Boot 4 automatically injects the service
     public AdminMainView(EmployeeService employeeService) {
@@ -26,12 +29,24 @@ public class AdminMainView extends VerticalLayout {
 
         setSizeFull();
         configureGrid();
-        updateList();
+        configureFilter();
 
         add(
                 new H1("IT Support - Employee Management"),
+                filterText,
                 employeeGrid
         );
+
+        updateList();
+    }
+
+    private void configureFilter() {
+        filterText.setPlaceholder("Filter by name or email...");
+        filterText.setWidth("250px");
+        filterText.setClearButtonVisible(true);
+
+        filterText.setValueChangeMode(ValueChangeMode.LAZY);
+        filterText.addValueChangeListener(e -> updateList());
     }
 
     private void configureGrid() {
@@ -46,8 +61,13 @@ public class AdminMainView extends VerticalLayout {
     }
 
     private void updateList() {
+
+        String searchTerm = filterText.getValue();
+
         // Using Pageable.unpaged() to get all records for the admin overview
-        var employeePage = employeeService.getAllEmployees(Pageable.unpaged());
+        var employeePage = (searchTerm == null || searchTerm.isEmpty())
+                ? employeeService.getAllEmployees(Pageable.unpaged())
+                : employeeService.searchEmployees(searchTerm, Pageable.unpaged());
 
         // Page provides a getContent() method to get the actual List<EmployeeDTO>
         employeeGrid.setItems(employeePage.getContent());
