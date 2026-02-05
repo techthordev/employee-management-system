@@ -1,29 +1,52 @@
+<div class="search-container">
+  <mat-form-field appearance="outline" class="search-field">
+    <mat-label>Search Employees</mat-label>
+    <input 
+      matInput 
+      [value]="searchTerm()"
+      (input)="onSearchChange($event)"
+      placeholder="Enter name or email..."
+    >
+    <mat-icon matPrefix>search</mat-icon>
+    @if (searchTerm()) {
+      <button 
+        matSuffix 
+        mat-icon-button 
+        aria-label="Clear" 
+        (click)="clearSearch()"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    }
+  </mat-form-field>
+</div>
+
 <div class="table-wrapper mat-elevation-z7">
-  <table mat-table [dataSource]="employees()" matSort (matSortChange)="onSortChange($event)">
+  <table mat-table [dataSource]="dataSource" matSort (matSortChange)="onSortChange($event)">
     <ng-container matColumnDef="rowNumber">
-        <th mat-header-cell *matHeaderCellDef>#</th>
-        <td mat-cell *matCellDef="let employee; let i = index">
-          {{ (paginator.pageIndex * paginator.pageSize) + i + 1 }}
-        </td>
-      </ng-container>
-    <!--<ng-container matColumnDef="id">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
-      <td mat-cell *matCellDef="let employee">{{ employee.id }}</td>
-    </ng-container>-->
+      <th mat-header-cell *matHeaderCellDef>#</th>
+      <td mat-cell *matCellDef="let employee; let i = index">
+        {{ (pageIndex() * pageSize()) + i + 1 }}
+      </td>
+    </ng-container>
+    
     <ng-container matColumnDef="firstName">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Vorname</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>First Name</th>
       <td mat-cell *matCellDef="let employee">{{ employee.firstName }}</td>
     </ng-container>
+    
     <ng-container matColumnDef="lastName">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Nachname</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Last Name</th>
       <td mat-cell *matCellDef="let employee">{{ employee.lastName }}</td>
     </ng-container>
+    
     <ng-container matColumnDef="email">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
       <td mat-cell *matCellDef="let employee">{{ employee.email }}</td>
     </ng-container>
+    
     <ng-container matColumnDef="actions">
-      <th mat-header-cell *matHeaderCellDef>Aktionen</th>
+      <th mat-header-cell *matHeaderCellDef>Actions</th>
       <td mat-cell *matCellDef="let employee">
         <button mat-icon-button color="primary" (click)="edit(employee)">
           <mat-icon>edit</mat-icon>
@@ -33,9 +56,28 @@
         </button>
       </td>
     </ng-container>
+    
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    
+    <!-- No results row -->
+    @if (employees().length === 0 && !loading()) {
+      <tr class="mat-row no-data-row">
+        <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+          <div class="no-data-message">
+            @if (searchTerm()) {
+              <mat-icon>search_off</mat-icon>
+              <p>No employees found for "{{ searchTerm() }}"</p>
+            } @else {
+              <mat-icon>inbox</mat-icon>
+              <p>No employees available</p>
+            }
+          </div>
+        </td>
+      </tr>
+    }
   </table>
+  
   <mat-paginator
     [pageSize]="pageSize()"
     [pageIndex]="pageIndex()"
