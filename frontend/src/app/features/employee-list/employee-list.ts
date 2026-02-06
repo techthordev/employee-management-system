@@ -1,14 +1,12 @@
-import { Component, computed, OnDestroy, signal } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table'; // MatTableDataSource importiert
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { Subject, Subscription } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 import { Employee } from '../../api/models/employee';
 import { EmployeeApiService } from '../../api/services/employee-api';
@@ -19,15 +17,21 @@ import { EmployeeDialog, EmployeeDialogData } from '../employee-dialog/employee-
   selector: 'app-employee-list',
   standalone: true,
   imports: [
-    MatTableModule, MatPaginatorModule, MatSortModule,
-    MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatDialogModule
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatDialogModule,
   ],
   templateUrl: './employee-list.html',
   styleUrls: ['./employee-list.css'],
 })
-export class EmployeeList implements OnDestroy {
+export class EmployeeList {
+  /** --- State Signals --- */
   readonly employees = signal<Employee[]>([]);
-  readonly searchTerm = signal('');
   readonly totalElements = signal(0);
   readonly pageIndex = signal(0);
   readonly pageSize = signal(10);
@@ -35,87 +39,86 @@ export class EmployeeList implements OnDestroy {
   readonly loading = signal(false);
 
   readonly displayedColumns = ['rowNumber', 'firstName', 'lastName', 'email', 'actions'];
+  readonly pageSizeOptions = computed(() => [5, 10, 20, 50, this.totalElements()]);
 
-  // Das hier ist der "Stabilisator": Erstellt eine neue DataSource, 
-  // sobald sich das employees-Signal ändert.
-  readonly dataSource = computed(() => new MatTableDataSource<Employee>(this.employees()));
+  readonly dataSource = computed(() => {
+    const ds = new MatTableDataSource<Employee>(this.employees());
+    return ds;
+  });
 
-  private searchSubject = new Subject<string>();
-  private searchSubscription: Subscription;
-
-  constructor(private employeeApi: EmployeeApiService, private dialog: MatDialog) {
-    this.searchSubscription = this.searchSubject.pipe(
-      debounceTime(300),
-      distinctUntilChanged()
-    ).subscribe(value => {
-      this.searchTerm.set(value);
-      this.pageIndex.set(0); 
-      this.loadEmployees();
-    });
-
+  constructor(
+    private employeeApi: EmployeeApiService,
+    private dialog: MatDialog,
+  ) {
     this.loadEmployees();
   }
 
-  ngOnDestroy() {
-    this.searchSubscription.unsubscribe();
-  }
-
-  readonly pageSizeOptions = computed(() => [5, 10, 20, 50, this.totalElements()]);
-  
-  readonly noDataMessage = computed(() => 
-    this.searchTerm() ? `No matches for "${this.searchTerm()}"` : 'No employees found.'
-  );
-
+  /**
+   * Fetch paginated and sorted employees from the API.
+   */
   loadEmployees(): void {
     this.loading.set(true);
     const sortStr = `${this.sortState().active},${this.sortState().direction || 'asc'}`;
 
-    this.employeeApi
-      .getEmployees(this.pageIndex(), this.pageSize(), sortStr, this.searchTerm())
-      .subscribe({
-        next: (response: Page<Employee>) => {
-          this.employees.set(response.content);
-          this.totalElements.set(response.page.totalElements);
-          this.loading.set(false);
-        },
-        error: () => this.loading.set(false),
-      });
+    this.employeeApi.getEmployees(this.pageIndex(), this.pageSize(), sortStr).subscribe({
+      next: (response: Page<Employee>) => {
+        this.employees.set(response.content);
+        this.totalElements.set(response.page.totalElements);
+        this.loading.set(false);
+      },
+      error: (err) => {
+        console.error('Error fetching employees:', err);
+        this.loading.set(false);
+      },
+    });
   }
 
-  onSearchChange(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    this.searchSubject.next(input.value.trim());
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource().filter = filterValue.trim().toLowerCase();
   }
 
-  clearSearch(): void {
-    this.searchSubject.next('');
-  }
-
+  /**
+   * Handle pagination changes.
+   */
   onPageChange(event: PageEvent): void {
     this.pageIndex.set(event.pageIndex);
     this.pageSize.set(event.pageSize);
     this.loadEmployees();
   }
 
+  /**
+   * Handle sort state changes.
+   */
   onSortChange(sort: Sort): void {
     this.sortState.set(sort.active ? sort : { active: 'lastName', direction: 'asc' });
-    this.pageIndex.set(0);
+    this.pageIndex.set(0); // Reset to first page on sort
     this.loadEmployees();
   }
 
+  /**
+   * Open dialog to edit an existing employee.
+   */
   edit(employee: Employee): void {
     const dialogRef = this.dialog.open(EmployeeDialog, {
       width: '400px',
       data: { mode: 'edit', employee: { ...employee } } as EmployeeDialogData,
     });
-    dialogRef.afterClosed().subscribe(res => { if (res) this.loadEmployees(); });
+    dialogRef.afterClosed().subscribe((res) => {
+      if (res) this.loadEmployees();
+    });
   }
 
+  /**
+   * Open dialog to confirm employee deletion.
+   */
   delete(employee: Employee): void {
     const dialogRef = this.dialog.open(EmployeeDialog, {
       width: '300px',
       data: { mode: 'delete', employee } as EmployeeDialogData,
     });
-    dialogRef.afterClosed().subscribe(res => { if (res) this.loadEmployees(); });
+    dialogRef.afterClosed().subscribe((res) => {
+      if (res) this.loadEmployees();
+    });
   }
 }
