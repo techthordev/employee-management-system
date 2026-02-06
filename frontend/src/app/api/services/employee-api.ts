@@ -19,11 +19,21 @@ export class EmployeeApiService {
    * Get paginated list of employees.
    * Supports pagination and sorting.
    */
-  getEmployees(page: number, size: number, sort: string, search?: string): Observable<Page<Employee>> {
-    let params = new HttpParams()
-      .set('page', page.toString())
-      .set('size', size.toString())
-      .set('sort', sort);
+  getEmployees(
+    page: number,
+    size: number,
+    sort: string,
+    search?: string
+  ): Observable<Page<Employee>> {
+    let params = new HttpParams().set('sort', sort);
+    
+    if (page !== undefined) {
+      params = params.set('page', page.toString());
+    }
+    
+    if (size !== undefined) {
+      params = params.set('size', size.toString());
+    }
 
     if (search && search.trim().length > 0) {
         params = params.set('search', search.trim());
