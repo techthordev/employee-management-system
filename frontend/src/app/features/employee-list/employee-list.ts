@@ -73,10 +73,29 @@ export class EmployeeList {
     });
   }
 
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource().filter = filterValue.trim().toLowerCase();
-  }
+  /**
+   * Handle filter/search functionality.
+   */
+   applyFilter(event: Event) {
+     const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
+   
+     if (filterValue) {
+       // Wenn gesucht wird: Wir fordern ALLE Elemente an, die die DB kennt
+       this.employeeApi
+         .getEmployees(0, this.totalElements(), 'lastName,asc', filterValue)
+         .subscribe({
+           next: (response) => {
+             this.employees.set(response.content);
+             // Wichtig: Wir setzen den lokalen Filter der DataSource, 
+             // damit die Tabelle sofort reagiert
+             this.dataSource().filter = filterValue;
+           }
+         });
+     } else {
+       // Wenn der Filter geleert wird: Zurück zum normalen Paging
+       this.loadEmployees();
+     }
+   }
 
   /**
    * Handle pagination changes.
