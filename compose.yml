@@ -2,7 +2,7 @@ services:
   postgres:
     image: postgres:18-alpine
     container_name: employee-management-db
-    userns_mode: "keep-id"  # Podman-specific
+    userns_mode: "keep-id"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
@@ -10,10 +10,14 @@ services:
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     volumes:
-      - ./database/init/01-init.sql:/docker-entrypoint-initdb.d/01-init.sql:z
-      - ./database/schema/02-schema.sql:/docker-entrypoint-initdb.d/02-schema.sql:z
-      - ./database/data/03-data.sql:/docker-entrypoint-initdb.d/03-data.sql:z
-      - postgres-data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init/01-init.sql:/docker-entrypoint-initdb.d/01-init.sql:Z
+      - ./database/schema/02-schema.sql:/docker-entrypoint-initdb.d/02-schema.sql:Z
+      - ./database/schema/03-auth-schema.sql:/docker-entrypoint-initdb.d/03-auth-schema.sql:Z
+      - ./database/schema/04-link-employee-auth.sql:/docker-entrypoint-initdb.d/04-link-employee-auth.sql:Z
+      - ./database/data/05-departments-data.sql:/docker-entrypoint-initdb.d/05-departments-data.sql:Z
+      - ./database/data/06-employees-data.sql:/docker-entrypoint-initdb.d/06-employees-data.sql:Z
+      - ./database/data/07-link-sample-users.sql:/docker-entrypoint-initdb.d/07-link-sample-users.sql:Z
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d employee_management"]
       interval: 10s
@@ -22,4 +26,5 @@ services:
     restart: unless-stopped
 
 volumes:
-  postgres-data:
+  postgres_data:  # ← Korrigiert: Unterstrich statt Bindestrich
+    driver: local
