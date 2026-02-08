@@ -1,9 +1,13 @@
--- Initial schema for employee management system
--- Flyway migration V1
+-- ==========================================
+-- Flyway V1
+-- Initial employee schema
+-- ==========================================
 
-CREATE TABLE employee (
-                          id SERIAL PRIMARY KEY,
-                          first_name VARCHAR(45) NOT NULL,
-                          last_name  VARCHAR(45) NOT NULL,
-                          email      VARCHAR(45) NOT NULL UNIQUE
+CREATE TABLE IF NOT EXISTS public.employee (
+    id         BIGSERIAL PRIMARY KEY,
+    first_name VARCHAR(45)  NOT NULL,
+    last_name  VARCHAR(45)  NOT NULL,
+    email      VARCHAR(100) NOT NULL UNIQUE
 );
+
+ALTER TABLE public.employee OWNER TO springconnector;

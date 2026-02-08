@@ -1,3 +1,10 @@
+Alles klar 👍
+Hier ist die **vollständig angepasste README.md**, **konsistent mit deinem aktuellen Stand**
+(**Flyway vorbereitet, aber derzeit deaktiviert**), **bereit für Copy & Paste**.
+
+---
+
+````md
 # Employee Management System (Hybrid Edition)
 
 A modern full-stack application built with **Spring Boot 4** and **Java 25 (LTS)**.  
@@ -8,7 +15,7 @@ This project showcases a hybrid backend architecture, combining a versioned REST
 ## 🏁 Overview
 
 - **Backend:** Spring Boot 4.x with Java 25 (LTS)
-- **Database:** PostgreSQL (with Flyway migrations)
+- **Database:** PostgreSQL (schema initialized via SQL init scripts, Flyway prepared)
 - **REST API:** Exposed under `/v1/` (documented via OpenAPI/Swagger)
 - **Admin UI:** Built with **Vaadin 25 (Flow)**, available at `/api/admin/`
 - **IDE:** Developed using Zed and IntelliJ IDEA on Fedora Linux
@@ -21,22 +28,23 @@ This project showcases a hybrid backend architecture, combining a versioned REST
 - **API Versioning:** Path-based versioning with clean controller mappings.
 - **Vaadin Admin Panel:** Secure, server-side rendered dashboard for IT Support and Backoffice tasks.
 - **Type Safety:** End-to-end type safety using DTOs and modern Java features.
-- **Database Migrations:** Version-controlled schema changes using Flyway.
+- **Database Initialization:** Schema and test data initialized via SQL scripts.
+- **Flyway Ready:** Migration setup prepared for future activation.
 - **Hybrid Architecture:** REST API and Admin UI running side by side without routing conflicts.
 
 ---
 
 ## 🛠️ Technology Stack
 
-| Layer        | Technology |
-|-------------|------------|
-| Runtime     | Java 25 (LTS) |
-| Framework   | Spring Boot 4.0.2 |
-| UI (Admin) | Vaadin 25.0.4 (Flow) |
-| Persistence| Spring Data JPA / Hibernate |
-| Database   | PostgreSQL 18+ |
-| Migrations | Flyway |
-| Documentation | SpringDoc OpenAPI (Swagger) |
+| Layer           | Technology |
+|----------------|------------|
+| Runtime        | Java 25 (LTS) |
+| Framework      | Spring Boot 4.0.2 |
+| UI (Admin)     | Vaadin 25.0.4 (Flow) |
+| Persistence    | Spring Data JPA / Hibernate |
+| Database       | PostgreSQL 18+ |
+| Database Setup | SQL init scripts (Flyway prepared) |
+| Documentation  | SpringDoc OpenAPI (Swagger) |
 
 ---
 
@@ -125,6 +133,31 @@ Vaadin routes are completely independent from REST controllers and are **not aff
 
 ---
 
+## 🗄️ Database Strategy
+
+At the moment, the database schema is initialized using SQL scripts
+(e.g. via container init scripts or manual execution).
+
+Flyway is already included in the project dependencies and the migration
+structure is prepared, but **Flyway is currently disabled** and not yet
+used to manage schema evolution.
+
+This allows:
+
+* Simple and explicit control over the database during early development
+* Easy inspection and modification of SQL during prototyping
+* A smooth transition to Flyway-based migrations at a later stage
+
+### Planned Migration Strategy
+
+In a later phase, the project will switch to Flyway-managed migrations,
+using versioned migration files (`V1__`, `V2__`, …) and repeatable
+migrations for development data.
+
+This transition does not require structural changes to the application.
+
+---
+
 ## 📦 Project Goals
 
 This project is designed as:
@@ -161,7 +194,8 @@ The architecture explicitly supports:
 1. Clone the repository.
 2. Configure your database connection in
    `src/main/resources/application.properties`.
-3. Run the application:
+3. Initialize the database schema using the provided SQL scripts.
+4. Run the application:
 
 ```bash
 ./mvnw spring-boot:run
@@ -182,3 +216,4 @@ The architecture explicitly supports:
 ## 📝 License
 
 Distributed under the **MIT License**.
+See `LICENSE` for more information.

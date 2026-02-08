@@ -12,12 +12,10 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./database/init/01-init.sql:/docker-entrypoint-initdb.d/01-init.sql:Z
-      - ./database/schema/02-schema.sql:/docker-entrypoint-initdb.d/02-schema.sql:Z
+      - ./database/schema/02-default-schema.sql:/docker-entrypoint-initdb.d/02-default-schema.sql:Z
       - ./database/schema/03-auth-schema.sql:/docker-entrypoint-initdb.d/03-auth-schema.sql:Z
-      - ./database/schema/04-link-employee-auth.sql:/docker-entrypoint-initdb.d/04-link-employee-auth.sql:Z
-      - ./database/data/05-departments-data.sql:/docker-entrypoint-initdb.d/05-departments-data.sql:Z
-      - ./database/data/06-employees-data.sql:/docker-entrypoint-initdb.d/06-employees-data.sql:Z
-      - ./database/data/07-link-sample-users.sql:/docker-entrypoint-initdb.d/07-link-sample-users.sql:Z
+      - ./database/data/04-employee-data.sql:/docker-entrypoint-initdb.d/04-employee-data.sql:Z
+      - ./database/data/05-auth-data.sql:/docker-entrypoint-initdb.d/05-auth-data.sql:Z
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d employee_management"]
       interval: 10s
