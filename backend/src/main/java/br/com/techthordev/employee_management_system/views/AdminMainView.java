@@ -10,12 +10,14 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import jakarta.annotation.security.RolesAllowed;
 import org.springframework.data.domain.Pageable;
 
 /**
  * Admin view to manage employees using Vaadin 25 Flow.
  */
 @Route("")
+@RolesAllowed("ADMIN")
 @PageTitle("Employee Management | Admin")
 public class AdminMainView extends VerticalLayout {
 

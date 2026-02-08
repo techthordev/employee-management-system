@@ -2,7 +2,11 @@ package br.com.techthordev.employee_management_system.controller;
 
 import br.com.techthordev.employee_management_system.dto.AuthRequest;
 import br.com.techthordev.employee_management_system.security.JwtTokenProvider;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,23 +24,46 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody AuthRequest authRequest) {
-        // 1. Authentifizierung versuchen
+    @PostMapping(value = "/login", consumes = {
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_FORM_URLENCODED_VALUE
+    })
+    public ResponseEntity<?> login(
+            @RequestParam(required = false) String username, // Used by Swagger (Form Data)
+            @RequestParam(required = false) String password, // Used by Swagger (Form Data)
+            @RequestBody(required = false) AuthRequest authRequest // Used by Angular (JSON)
+    ) {
+        // Determine which source to use
+        String finalUsername = (authRequest != null) ? authRequest.username() : username;
+        String finalPassword = (authRequest != null) ? authRequest.password() : password;
+
+        // 1. Authenticate
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        authRequest.username(),
-                        authRequest.password()
-                )
+                new UsernamePasswordAuthenticationToken(finalUsername, finalPassword)
         );
 
-        // 2. UserDetails extrahieren
+        // 2. Generate Token
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
-        // 3. Token generieren
         String token = jwtTokenProvider.generateToken(userDetails);
 
-        // 4. Token als JSON zurückgeben
-        return ResponseEntity.ok(Map.of("token", token));
+        // 3. Return in a format Swagger understands
+        // Swagger looks for "access_token" to automatically fill the Bearer header
+        return ResponseEntity.ok(Map.of(
+                "access_token", token,
+                "token_type", "Bearer"
+        ));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletResponse response) {
+        // Clear the JWT cookie by setting maxAge to 0
+        ResponseCookie cookie = ResponseCookie.from("jwt_token", "")
+                .httpOnly(true)
+                .path("/")
+                .maxAge(0)
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
+        return ResponseEntity.ok(Map.of("message", "Logged out successfully"));
     }
 }

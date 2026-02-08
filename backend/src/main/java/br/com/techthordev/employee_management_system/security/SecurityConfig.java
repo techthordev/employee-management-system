@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -15,6 +16,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(jsr250Enabled = true)
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
@@ -26,38 +28,45 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // 1. Disable CSRF for REST APIs using JWT
                 .csrf(AbstractHttpConfigurer::disable)
 
-                // 2. Configure request authorization
+                // 1. Enable Form Login for the Browser
+                .formLogin(form -> form
+                        // Spring Boot provides a default /login page
+                        .defaultSuccessUrl("/admin/")
+                        .permitAll()
+                )
+
+                .logout(logout -> logout
+                        .logoutUrl("/v1/auth/logout") // Fixed typo: authh -> auth
+                        .deleteCookies("jwt_token", "JSESSIONID")
+                        .logoutSuccessUrl("/login")
+                        .permitAll()
+                )
+
+                // 2. IMPORTANT: Change to IF_REQUIRED to allow Form Login to work
+                // while still supporting JWT for the API.
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                )
+
                 .authorizeHttpRequests(auth -> auth
-                        // Permit login endpoint explicitly (This was missing)
-                        .requestMatchers("/v1/auth/**").permitAll()
-
-                        // Publicly accessible paths for Swagger and OpenAPI
+                        // Public paths
+                        .requestMatchers("/v1/auth/**", "/login").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/docs/**").permitAll()
-
-                        // Vaadin specific internal requests and static resources
                         .requestMatchers("/VAADIN/**", "/favicon.ico", "/robots.txt", "/*.js", "/*.css").permitAll()
-                        .requestMatchers("/admin/**").permitAll()
+                        .requestMatchers("/", "/index.html").permitAll()
 
-                        // Public Angular routes and landing pages
-                        .requestMatchers("/", "/index.html", "/login").permitAll()
-
-                        // Protected Business API endpoints
+                        // Protected paths
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/v1/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/v1/employees/**").authenticated()
                         .requestMatchers("/v1/**").authenticated()
 
-                        // All other requests require authentication
                         .anyRequest().authenticated()
                 )
 
-                // 3. Set session management to stateless for JWT
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
-
-                // 4. Add custom JWT filter before standard authentication filter
+                // 3. Add the JWT filter
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
