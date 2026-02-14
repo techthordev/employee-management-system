@@ -1,0 +1,45 @@
+# ==================================================
+# 1. GENERAL & IDEs
+# ==================================================
+.idea/
+*.iml
+.vscode/
+.zed/
+.DS_Store
+Thumbs.db
+
+# ==================================================
+# 2. FOUNDATION & PERSISTENCE
+# ==================================================
+# Never commit your actual secrets
+01_Foundation/persistence/.env
+01_Foundation/persistence/postgres_data/
+
+# ==================================================
+# 3. BACKEND (Spring Boot / Gradle)
+# ==================================================
+02_system_integration/employee-management-system/backend/.gradle/
+02_system_integration/employee-management-system/backend/build/
+02_system_integration/employee-management-system/backend/bin/
+02_system_integration/employee-management-system/backend/.env
+02_system_integration/employee-management-system/backend/.env.example
+# If you have separate subprojects in Backend:
+**/build/
+**/.gradle/
+
+# ==================================================
+# 4. FRONTEND (Angular / Node)
+# ==================================================
+02_system_integration/employee-management-system/frontend/node_modules/
+02_system_integration/employee-management-system/frontend/dist/
+02_system_integration/employee-management-system/frontend/.angular/
+02_system_integration/employee-management-system/frontend/.env
+02_system_integration/employee-management-system/frontend/npm-debug.log*
+02_system_integration/employee-management-system/frontend/yarn-error.log*
+
+# ==================================================
+# 5. INTEGRATION & LOGS
+# ==================================================
+*.log
+05_System_Integration/**/build/
+05_System_Integration/**/node_modules/
