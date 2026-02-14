@@ -1,64 +1,82 @@
 # 🎓 Full-Stack Learning Journey (Fedora)
 
-> **From Setup to System:** A structured progression through modern enterprise technologies, documented in modules from core basics to a professional portfolio project.
-
-[![OS: Fedora](https://img.shields.io/badge/OS-Fedora%20Linux-blue?logo=fedora)](https://fedoraproject.org/)
-[![IDE: Zed / IntelliJ](https://img.shields.io/badge/IDE-Zed%20%7C%20IntelliJ-orange)](https://zed.dev)
-[![Standard Branch: main](https://img.shields.io/badge/Branch-main-green?logo=git)](https://gitlab.com/techthordev)
+This repository documents the step-by-step development of a modern Enterprise application, leveraging the latest technologies and a professional DevOps workflow on Fedora Linux.
 
 ---
 
-## 📂 Repository Structure
+## 📂 Project Structure
 
-This repository is organized chronologically and by topic to reflect the full-stack learning curve within the Java/TypeScript ecosystem.
+### [01_Foundation](https://www.google.com/search?q=./01_Foundation)
 
-### [01_Gradle](./01_Gradle)
-* **Focus:** Build automation & dependency management.
-* Mastering Gradle 9.3+ for Java 25 environments.
+The core infrastructure and development environment.
 
-### [02_PostgreSQL](./02_PostgreSQL)
-* **Focus:** Persistence & SQL best practices.
-* Database initialization scripts and schema design for the EMS project.
+* **[stack/](https://www.google.com/search?q=./01_Foundation/stack)**: Configuration for **Java 25** and **Gradle 9.3**, focusing on Virtual Threads and Structured Concurrency.
+* **[persistence/](https://www.google.com/search?q=./01_Foundation/persistence)**: Containerized **PostgreSQL 18** setup via Podman.
+* Implements all Hibernate relationship types: `@OneToOne`, `@OneToMany`, and `@ManyToMany`.
+* Features automated `updated_at` triggers and Optimistic Locking (`version`).
+* Secure initialization via shell-based user and database creation.
 
-### [03_DevOps](./03_DevOps)
-* **Focus:** Containerization on Fedora.
-* Orchestrating infrastructure services using **Podman Compose**.
 
-### [04_SpringBoot](./04_SpringBoot)
-* **Focus:** Layered Architecture (Backend).
-* Implementation of Entities, Repositories, and Services. Focus on OpenAPI/Swagger.
 
-### [05_Angular](./05_Angular)
-* **Focus:** Modern Frontend Patterns.
-* Transitioning to Angular 21 with **Signals-first** architecture and standalone components.
+### [02_Backend](https://www.google.com/search?q=./02_Backend)
 
-### [06_Projects/employee-management-system](./06_Projects/employee-management-system)
-* 🚀 **The Main Project:** Integration of all modules into a production-grade system.
-* **Backend:** Spring Boot 4 / Java 25.
-* **Frontend:** Angular 21 SPA.
-* **Spec:** See the dedicated [EMS README](./06_Projects/employee-management-system/README.md).
+The server-side application logic built with **Spring Boot 4.0** (Spring Framework 7).
 
-### [07_GitLab](./07_GitLab)
-* **Focus:** Professional DevOps & CI/CD.
-* Version control using **GitLab CLI (glab)**, SSH-key management, and pipeline structures.
+* High-performance processing using **Project Loom** (Virtual Threads).
+* Secure identity management via a dedicated `auth` schema.
 
----
+### [03_Frontend](https://www.google.com/search?q=./03_Frontend)
 
-## 🏗️ Architecture Principles
-1. **Strict Layering:** Clear separation of concerns (Controller → Service → Repository).
-2. **Signals-first:** Leveraging the latest Angular reactive primitives for state management.
-3. **Fedora Optimized:** Native integration of Podman and Linux development tools.
-4. **Clean Code:** Explicit DTO mapping and versioned REST APIs.
+A modern user interface developed with **Angular 21**.
+
+* **Signals-first** architecture for reactive state management.
+* Standalone components to eliminate `NgModules`.
+
+### [04_GitLab](https://www.google.com/search?q=./04_GitLab)
+
+DevOps and version control standards for the project.
+
+* Workflow integration using the **GitLab CLI (`glab`)**.
+* Automated CI/CD pipeline definitions for building and testing.
+
+### [05_System_Integration](https://www.google.com/search?q=./05_System_Integration)
+
+🚀 The final production-grade **Employee Management System (EMS)**, integrating all previous modules into a cohesive solution.
 
 ---
 
-## 🛠️ Development Tools
-* **OS:** Fedora Workstation
-* **Backend IDE:** IntelliJ IDEA
-* **Frontend/Quick-Edits:** Zed Editor
-* **VCS:** GitLab via `glab` CLI
+## 🛠️ Technical Stack Summary
+
+| Component | Technology | Version |
+| --- | --- | --- |
+| **OS** | Fedora Linux | Native |
+| **Runtime** | Java | 25 |
+| **Framework** | Spring Boot | 4.0+ |
+| **Frontend** | Angular | 21+ |
+| **Database** | PostgreSQL | 18 |
+| **Container** | Podman | Native |
+| **Build Tool** | Gradle (Groovy) | 9.3 |
 
 ---
 
-## 👨‍💻 Author
-**Thorsten Fey** | 🌍 [techthordev.com.br](https://techthordev.com.br) | 💼 [LinkedIn](https://linkedin.com/in/thorstenfey)
+## 🚀 Getting Started
+
+1. **Clone the repository**:
+```bash
+git clone git@gitlab.com:techthordev/learning.git
+
+```
+
+
+2. **Initialize Infrastructure**:
+Navigate to `01_Foundation/persistence` and start the database:
+```bash
+podman compose up -d
+
+```
+
+
+3. **Check Status**:
+```bash
+glab repo view
+```
