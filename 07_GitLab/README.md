@@ -16,20 +16,54 @@ To ensure secure and passwordless communication, we use SSH keys (ED25519) share
 
 ---
 
+## 🔍 Environment & Context Validation
+
+Before pushing any code, always verify that you are working in the correct repository context.
+
+### Verify Remote Repository (glab)
+Use this command to see the current project name, description, and URL:
+```bash
+glab repo view
+
+```
+
+### Verify Remote URLs (git)
+
+To check the exact fetch/push endpoints and ensure SSH is used:
+
+```bash
+git remote -v
+
+```
+
+### Open Repository in Browser
+
+Quickly open the GitLab web interface for the current project:
+
+```bash
+glab repo view -w
+
+```
+
+---
+
 ## 🚀 Git Workflow Standards
 
 ### Branching Policy
+
 * **Main Branch:** The `main` branch is the source of truth.
 * **Protection:** The `main` branch is protected on GitLab to prevent accidental forced pushes, ensuring stability for CI/CD.
 
 ### Essential Commands
+
 1. **Initialize & Link:**
-   ```bash
-   git init
-   git branch -M main
-   git remote add origin git@gitlab.com:techthordev/<repo-name>.git
+```bash
+git init
+git branch -M main
+git remote add origin git@gitlab.com:techthordev/<repo-name>.git
 
 ```
+
 
 2. **Commit & Push:**
 ```bash
