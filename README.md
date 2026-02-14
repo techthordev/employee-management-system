@@ -1,101 +1,64 @@
-# 🏗️ Gradle Setup (Java)
+# 🎓 Full-Stack Learning Journey (Fedora)
 
-[![Gradle](https://img.shields.io/badge/Gradle-9.3.1-blue?logo=gradle)](https://gradle.org/)
+> **From Setup to System:** A structured progression through modern enterprise technologies, documented in modules from core basics to a professional portfolio project.
 
-This guide explains how to set up, use, and maintain **Gradle 9.3.1** for **Spring Boot 4 + Java 25 projects** in the EMS Learning environment.
-
----
-
-## ⚡ Getting Started
-
-* **Check Gradle version:**
-
-```bash
-gradle -v
-```
-
-* **Upgrade Gradle via SDKMAN (if needed):**
-
-```bash
-sdk list gradle          # list available versions
-sdk install gradle 9.3.1 # install 9.3.1 (current version)
-sdk default gradle 9.3.1 # set as default
-```
-
-> ✅ The internal Groovy version (4.0.28) is automatically used by Gradle. No separate Groovy installation is required.
+[![OS: Fedora](https://img.shields.io/badge/OS-Fedora%20Linux-blue?logo=fedora)](https://fedoraproject.org/)
+[![IDE: Zed / IntelliJ](https://img.shields.io/badge/IDE-Zed%20%7C%20IntelliJ-orange)](https://zed.dev)
+[![Standard Branch: main](https://img.shields.io/badge/Branch-main-green?logo=git)](https://gitlab.com/techthordev)
 
 ---
 
-## 🛠️ Build & Run
+## 📂 Repository Structure
 
-* **Build project:**
+This repository is organized chronologically and by topic to reflect the full-stack learning curve within the Java/TypeScript ecosystem.
 
-```bash
-gradle build
-```
+### [01_Gradle](./01_Gradle)
+* **Focus:** Build automation & dependency management.
+* Mastering Gradle 9.3+ for Java 25 environments.
 
-* **Run Spring Boot application:**
+### [02_PostgreSQL](./02_PostgreSQL)
+* **Focus:** Persistence & SQL best practices.
+* Database initialization scripts and schema design for the EMS project.
 
-```bash
-gradle bootRun
-```
+### [03_DevOps](./03_DevOps)
+* **Focus:** Containerization on Fedora.
+* Orchestrating infrastructure services using **Podman Compose**.
 
-* **Clean project:**
+### [04_SpringBoot](./04_SpringBoot)
+* **Focus:** Layered Architecture (Backend).
+* Implementation of Entities, Repositories, and Services. Focus on OpenAPI/Swagger.
 
-```bash
-gradle clean
-```
+### [05_Angular](./05_Angular)
+* **Focus:** Modern Frontend Patterns.
+* Transitioning to Angular 21 with **Signals-first** architecture and standalone components.
 
-* **List dependencies:**
+### [06_Projects/employee-management-system](./06_Projects/employee-management-system)
+* 🚀 **The Main Project:** Integration of all modules into a production-grade system.
+* **Backend:** Spring Boot 4 / Java 25.
+* **Frontend:** Angular 21 SPA.
+* **Spec:** See the dedicated [EMS README](./06_Projects/employee-management-system/README.md).
 
-```bash
-gradle dependencies
-```
-
-* **Check available tasks:**
-
-```bash
-gradle tasks
-```
-
----
-
-## 📦 Dependencies
-
-* Use `build.gradle` (Groovy DSL) for all Spring Boot / EMS projects.
-* Recommended plugins:
-
-```groovy
-plugins {
-    id 'java'
-    id 'org.springframework.boot' version '4.0.2'
-    id 'io.spring.dependency-management' version '1.1.2'
-}
-```
-
-* Recommended dependencies:
-
-  * `spring-boot-starter-web`
-  * `spring-boot-starter-data-jpa`
-  * `spring-boot-starter-security`
-  * `spring-boot-devtools`
-  * `postgresql`
-  * `springdoc-openapi-ui`
+### [07_GitLab](./07_GitLab)
+* **Focus:** Professional DevOps & CI/CD.
+* Version control using **GitLab CLI (glab)**, SSH-key management, and pipeline structures.
 
 ---
 
-## 🏆 Best Practices
-
-* Keep **build scripts clean and organized** – separate logic into multiple files if needed.
-* Use **Groovy DSL** (`build.gradle`) for new projects – stable and widely supported.
-* Manage **dependencies carefully** to avoid conflicts.
-* Regularly **upgrade Gradle** and plugins to stay compatible with **latest Java / Spring Boot**.
-* **Wrapper (`gradlew`) is optional** if using SDKMAN; use only if reproducibility across developers/CI is needed.
+## 🏗️ Architecture Principles
+1. **Strict Layering:** Clear separation of concerns (Controller → Service → Repository).
+2. **Signals-first:** Leveraging the latest Angular reactive primitives for state management.
+3. **Fedora Optimized:** Native integration of Podman and Linux development tools.
+4. **Clean Code:** Explicit DTO mapping and versioned REST APIs.
 
 ---
 
-## 📚 References
+## 🛠️ Development Tools
+* **OS:** Fedora Workstation
+* **Backend IDE:** IntelliJ IDEA
+* **Frontend/Quick-Edits:** Zed Editor
+* **VCS:** GitLab via `glab` CLI
 
-* [Gradle Documentation](https://docs.gradle.org/current/userguide/userguide.html)
-* [Spring Boot + Gradle Guide](https://docs.spring.io/spring-boot/docs/current/gradle-plugin/reference/html/)
-* [Groovy DSL Reference](https://docs.gradle.org/current/userguide/tutorial_using_tasks.html)
+---
+
+## 👨‍💻 Author
+**Thorsten Fey** | 🌍 [techthordev.com.br](https://techthordev.com.br) | 💼 [LinkedIn](https://linkedin.com/in/thorstenfey)
