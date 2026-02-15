@@ -13,13 +13,13 @@ entity-dependency strategy to ensure data integrity and maintainability.
 
 ## Technology Stack
 
-- Java 25+
-- Spring Boot 4+
-- Spring Data JPA (Hibernate)
-- PostgreSQL
-- Gradle
-- Virtual Threads (Project Loom)
-- RESTful APIs
+* Java 25+
+* Spring Boot 4+
+* Spring Data JPA (Hibernate)
+* PostgreSQL
+* Gradle
+* Virtual Threads (Project Loom)
+* REST APIs
 
 ---
 
@@ -27,102 +27,37 @@ entity-dependency strategy to ensure data integrity and maintainability.
 
 ```
 br.com.techthordev.backend
- ├── entity        (JPA Mappings for public/auth schemas)
- ├── repository    (Spring Data JPA Interfaces)
- ├── controller    (REST Endpoints for Angular)
- ├── service       (Business Logic / Virtual Thread handling)
- └── config        (Security & Virtual Thread configurations)
+ ├── entity
+ ├── repository
+ ├── service
+ ├── controller
+ └── config
 ```
-
 
 ### Responsibilities
 
-- **entity**: JPA entities mapped to database tables
-- **repository**: Persistence layer (JpaRepository)
-- **service**: Business logic and transactions
-- **controller**: REST API endpoints
-- **config**: Security and infrastructure configuration
+* **entity** – JPA mappings aligned with the database schema
+* **repository** – Spring Data JPA interfaces
+* **service** – Business logic and transaction handling
+* **controller** – REST endpoints
+* **config** – Security and infrastructure configuration
 
 ---
 
-## Public Schema
+## Database Schema (public)
 
 The application uses the **PostgreSQL `public` schema**.
 
-The following diagram shows the **complete database schema**,
-including all tables and foreign key relationships:
-
 ![Public Scheme](img/employee_management-public-scheme.png)
 
-This diagram is the **authoritative source of truth** for:
-- table definitions
-- foreign keys
-- entity relationships
-- dependency hierarchy
-- correct JPA mappings
+The diagram is the authoritative reference for:
+
+* table definitions
+* foreign keys
+* entity relationships
+* dependency hierarchy
 
 All entities must strictly match this schema.
-
----
-
-## Entity Dependency Strategy
-
-Entities are implemented in **dependency levels** to avoid foreign key
-violations and to allow incremental development and testing.
-
----
-
-### Level 0 – Independent Entities (Completed)
-
-These entities do **not depend on any other tables**:
-
-- `Department`
-- `Project`
-
-Status:
-- JPA entities implemented
-- Repositories implemented
-- Mapped to the `public` schema
-- Can be tested independently
-
----
-
-### Level 0 – Repository Integration Tests
-
-Before introducing dependent entities, Level 0 entities (`Department`, `Project`)
-are validated using **repository integration tests** against a real PostgreSQL
-instance running in a container.
-
-### Test Strategy
-
-Level 0 tests verify:
-
-- Database connectivity (PostgreSQL in container)
-- Correct schema usage (`public`)
-- JPA entity mappings
-- ID generation strategy
-- Optimistic locking (`@Version`)
-- Repository CRUD operations
-
-Tests are executed using:
-
-- `@SpringBootTest`
-- Spring Data JPA repositories
-- A dedicated `test` profile
-- Real database (no in-memory database)
-
-### Transaction Handling
-
-All repository tests run inside a transaction:
-
-```
-@Transactional
-```
-
-Each test is automatically rolled back after execution.
-No data is persisted permanently in the database.
-
-### Schema Validation
 
 Hibernate is configured with:
 
@@ -130,85 +65,126 @@ Hibernate is configured with:
 spring.jpa.hibernate.ddl-auto: validate
 ```
 
-This ensures:
+This guarantees:
 
-* The database schema must exactly match the JPA entities
-* Any mismatch (missing columns, wrong nullability, wrong types) causes startup failure
-* Schema changes must be handled explicitly (e.g. via Flyway)
+* The schema must match the entities exactly
+* Any mismatch causes application startup failure
+* Schema changes must be handled explicitly
 
-This setup enforces strict schema discipline and prevents accidental
-runtime schema changes.
+The database is the ultimate source of truth.
 
-### Running the Tests
+---
 
-Tests can be executed with:
+# Entity Dependency Strategy
+
+Entities are implemented according to foreign key dependency levels.
+This prevents constraint violations and enables incremental development.
+
+---
+
+## Level 0 – Independent Entities (Completed)
+
+Entities without foreign key dependencies:
+
+* `Department`
+* `Project`
+
+Status:
+
+* Entities implemented
+* Repositories implemented
+* Repository integration tests implemented
+
+These can be tested independently.
+
+---
+
+### Level 0 – Repository Integration Tests
+
+Level 0 entities are validated against a real PostgreSQL container.
+
+Test characteristics:
+
+* `@SpringBootTest`
+* Real database (no in-memory DB)
+* `test` profile
+* `@Transactional` with automatic rollback
+
+Validated aspects:
+
+* Database connectivity
+* Schema usage (`public`)
+* JPA mappings
+* ID generation
+* Optimistic locking (`@Version`)
+* CRUD behavior
+
+Run tests:
 
 ```bash
 SPRING_PROFILES_ACTIVE=test ./gradlew clean test
 ```
 
-A successful run confirms that Level 0 is stable and ready
-for dependent entities (Level 1).
+A successful run confirms Level 0 stability.
 
 ---
 
-### Level 1 – Dependent Entity (Completed ✅)
+## Level 1 – Dependent Entity (Completed)
 
-#### `Employee`
+### `Employee`
 
-Dependencies:
-- Requires an existing `Department`
-- Foreign key: `department_id`
+Dependency:
+
+* Requires existing `Department`
+* Foreign key: `department_id`
 
 Rules:
-- A Department must exist before creating an Employee
-- JPA mapping uses `@ManyToOne`
-- Must match the schema diagram exactly
 
-Components:
-- `Employee` entity ✅
-- `EmployeeRepository` ✅
-- Repository integration tests ✅
+* A department must exist before creating an employee
+* `@ManyToOne` mapping
+* Must match schema exactly
 
-**Database Constraints:**
+Components implemented:
 
-The `Employee` entity enforces data integrity through database-level constraints:
+* `Employee` entity
+* `EmployeeRepository`
+* Integration tests
+
+### Database Constraints
 
 ```sql
 CREATE TABLE public.employee (
     ...
-    department_id BIGINT NOT NULL,  -- Required field
+    department_id BIGINT NOT NULL,
     ...
     CONSTRAINT fk_employee_department 
         FOREIGN KEY (department_id) 
         REFERENCES public.department(id) 
-        ON DELETE RESTRICT  -- Prevents orphaned employees
+        ON DELETE RESTRICT
 );
 ```
 
-**Constraint Strategy:**
+Integrity rules:
 
-- **NOT NULL constraint**: Every employee must belong to a department
-- **ON DELETE RESTRICT**: Departments cannot be deleted if employees are assigned
-- **Defense in Depth**: Database constraints act as the final data integrity barrier
-- Tests verify constraint violations throw `DataIntegrityViolationException`
+* NOT NULL: Employee must belong to a department
+* ON DELETE RESTRICT: Prevents deleting departments with employees
+* Constraint violations trigger `DataIntegrityViolationException`
 
-This approach follows enterprise best practices:
-1. Database enforces business rules at the lowest level
-2. Application code documents rules via JPA annotations
-3. Tests validate that violations are properly caught
-
-Status: **Completed and tested** ✅
+Status: Completed and validated.
 
 ---
 
-### Level 2 – Strongly Dependent Entities (Next)
+## Level 2 – Strongly Dependent Entities (Next)
 
-- `EmployeeProfile`
-  - One-to-One relationship with `Employee`
-- `EmployeeProject`
-  - Join table between `Employee` and `Project`
-  - Represents a Many-to-Many relationship
+Planned:
+
+* `EmployeeProfile`
+
+  * One-to-One with `Employee`
+* `EmployeeProject`
+
+  * Join table (`Employee` ↔ `Project`)
+  * Many-to-Many relationship
 
 These introduce more complex relational mappings.
 
@@ -216,67 +192,62 @@ These introduce more complex relational mappings.
 
 ## Repository Strategy
 
-Repositories are created according to the dependency hierarchy.
+Repositories follow the entity dependency hierarchy.
 
-### Level 0 Repositories (Completed ✅)
-- `DepartmentRepository`
-- `ProjectRepository`
+Implemented:
 
-### Level 1 Repository (Completed ✅)
-- `EmployeeRepository`
+* `DepartmentRepository`
+* `ProjectRepository`
+* `EmployeeRepository`
 
 Repository tests validate:
-- CRUD operations
-- Foreign key constraints
-- Constraint violation handling
-- Database integrity rules
+
+* CRUD operations
+* Foreign key enforcement
+* Constraint violation handling
 
 ---
 
 ## Data Integrity Strategy
 
-The application implements a **layered data integrity approach**:
+The system enforces integrity at multiple layers.
 
-### 1. Database Layer (Primary Defense)
-- NOT NULL constraints for required fields
-- FOREIGN KEY constraints with appropriate DELETE behavior
-- UNIQUE constraints for business keys
-- CHECK constraints for domain rules
+### 1. Database Layer (Primary Enforcement)
 
-### 2. JPA Layer (Documentation & Hints)
-- `nullable = false` in `@Column` and `@JoinColumn`
-- `optional = false` in relationship annotations
-- `@Version` for optimistic locking
-- Proper `FetchType` for performance
+* NOT NULL constraints
+* FOREIGN KEY constraints
+* UNIQUE constraints
+* CHECK constraints
 
-### 3. Application Layer (Optional)
-- Bean Validation (`@NotNull`, `@NotBlank`, etc.) for user-friendly errors
-- Custom validation logic in services
-- DTO validation before persistence
+### 2. JPA Layer (Alignment & Documentation)
 
-**Philosophy**: The database is the **ultimate source of truth**.
-Application-level validations enhance user experience but never replace database constraints.
+* `nullable = false`
+* `optional = false`
+* `@Version` for optimistic locking
+* Proper fetch strategies
+
+### 3. Application Layer (Optional Enhancements)
+
+* Bean Validation
+* Service-level validation
+
+Philosophy:
+Database constraints are mandatory.
+Application validations improve user experience but do not replace database rules.
 
 ---
 
 ## Development Rules
 
-- Always follow the entity dependency hierarchy
-- The schema diagram must stay in sync with the database
-- Any schema change requires:
-  - updating the diagram
-  - updating entities
-  - validating repositories
-- Database constraints must match JPA annotations
-- All constraint violations must be tested
+* Follow the dependency hierarchy
+* Keep schema diagram and database in sync
+* Validate repositories after schema changes
+* Database constraints must match JPA annotations
+* Constraint violations must be tested
 
 ---
 
 ## Next Steps
 
-1. ~~Implement `Employee` entity~~ ✅
-2. ~~Implement `EmployeeRepository`~~ ✅
-3. ~~Validate foreign key behavior~~ ✅
-4. Continue with Level 2 entities:
-  - `EmployeeProfile` (One-to-One)
-  - `EmployeeProject` join table (Many-to-Many)
+* Implement `EmployeeProfile` (One-to-One)
+* Implement `EmployeeProject` (Many-to-Many join table)
