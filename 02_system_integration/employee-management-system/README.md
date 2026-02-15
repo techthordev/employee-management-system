@@ -41,10 +41,8 @@ ng new frontend
 
 ```
 
-* **Selected Styles:** SCSS
-* **Routing:** Enabled
-* **Features:** Tailwind CSS (Integrated via CLI prompts)
-
+* **Selected Styles:** Tailwind CSS
+* **Confirm Defaults**
 ---
 
 ## ⚙️ Environment Configuration
