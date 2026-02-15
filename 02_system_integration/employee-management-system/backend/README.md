@@ -82,6 +82,60 @@ This prevents constraint violations and enables incremental development.
 
 ---
 
+## Entity Dependency Levels
+
+Entities are grouped into dependency levels based on their
+**foreign key relationships**.
+
+The level system defines **creation order, test order, and deletion safety**.
+
+---
+
+### Level 0 – Independent Tables
+
+Tables without foreign key dependencies.
+
+Characteristics:
+- No `@ManyToOne` or `@OneToOne` dependencies
+- Can be created, tested, and deleted independently
+- Form the foundation of the domain model
+
+Examples:
+- `Department`
+- `Project`
+
+---
+
+### Level 1 – Simply Dependent Tables
+
+Tables that depend on exactly one Level 0 table.
+
+Characteristics:
+- Single foreign key dependency
+- Cannot exist without the referenced Level 0 entity
+- Represent core domain relationships
+
+Example:
+- `Employee` → depends on `Department`
+
+---
+
+### Level 2 – Strongly Dependent Tables
+
+Tables that depend on Level 1 entities or represent
+composed relationships.
+
+Characteristics:
+- One-to-One or Many-to-Many relationships
+- Often implemented as extension or join tables
+- Cannot exist independently
+
+Examples:
+- `EmployeeProfile` → One-to-One with `Employee`
+- `EmployeeProject` → Join table (`Employee` ↔ `Project`)
+
+---
+
 ## Level 0 – Independent Entities (Completed)
 
 Entities without foreign key dependencies:
