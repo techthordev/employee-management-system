@@ -23,7 +23,7 @@ public class EmployeeRepositoryTest {
     DepartmentRepository departmentRepository;
 
     @Test
-    void shouldSaveEmployeeWhithDepartment() {
+    void shouldSaveEmployeeWithDepartment() {
 
         Department department = new Department();
         department.setName("Engineering");
@@ -50,9 +50,10 @@ public class EmployeeRepositoryTest {
         employee.setLastName("Doe");
         employee.setEmail("johnd@techthordev.com.br");
 
-        assertThrows(Exception.class, () -> {
-            employeeRepository.saveAndFlush(employee);
-        });
+        assertThrows(
+            DataIntegrityViolationException.class,
+            () -> employeeRepository.saveAndFlush(employee)
+        );
     }
 
     @Test
