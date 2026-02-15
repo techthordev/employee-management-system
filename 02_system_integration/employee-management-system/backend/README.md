@@ -115,9 +115,9 @@ Tests are executed using:
 
 All repository tests run inside a transaction:
 
-```java
+```
 @Transactional
-````
+```
 
 Each test is automatically rolled back after execution.
 No data is persisted permanently in the database.
@@ -152,7 +152,7 @@ for dependent entities (Level 1).
 
 ---
 
-### Level 1 – Dependent Entity (Current)
+### Level 1 – Dependent Entity (Completed ✅)
 
 #### `Employee`
 
@@ -166,18 +166,49 @@ Rules:
 - Must match the schema diagram exactly
 
 Components:
-- `Employee` entity
-- `EmployeeRepository`
+- `Employee` entity ✅
+- `EmployeeRepository` ✅
+- Repository integration tests ✅
+
+**Database Constraints:**
+
+The `Employee` entity enforces data integrity through database-level constraints:
+
+```sql
+CREATE TABLE public.employee (
+    ...
+    department_id BIGINT NOT NULL,  -- Required field
+    ...
+    CONSTRAINT fk_employee_department 
+        FOREIGN KEY (department_id) 
+        REFERENCES public.department(id) 
+        ON DELETE RESTRICT  -- Prevents orphaned employees
+);
+```
+
+**Constraint Strategy:**
+
+- **NOT NULL constraint**: Every employee must belong to a department
+- **ON DELETE RESTRICT**: Departments cannot be deleted if employees are assigned
+- **Defense in Depth**: Database constraints act as the final data integrity barrier
+- Tests verify constraint violations throw `DataIntegrityViolationException`
+
+This approach follows enterprise best practices:
+1. Database enforces business rules at the lowest level
+2. Application code documents rules via JPA annotations
+3. Tests validate that violations are properly caught
+
+Status: **Completed and tested** ✅
 
 ---
 
 ### Level 2 – Strongly Dependent Entities (Next)
 
 - `EmployeeProfile`
-    - One-to-One relationship with `Employee`
+  - One-to-One relationship with `Employee`
 - `EmployeeProject`
-    - Join table between `Employee` and `Project`
-    - Represents a Many-to-Many relationship
+  - Join table between `Employee` and `Project`
+  - Represents a Many-to-Many relationship
 
 These introduce more complex relational mappings.
 
@@ -187,16 +218,44 @@ These introduce more complex relational mappings.
 
 Repositories are created according to the dependency hierarchy.
 
-### Level 0 Repositories (Completed)
+### Level 0 Repositories (Completed ✅)
 - `DepartmentRepository`
 - `ProjectRepository`
 
-### Level 1 Repository (Next)
+### Level 1 Repository (Completed ✅)
 - `EmployeeRepository`
 
-At this stage:
-- No custom queries
-- Focus on correctness and foreign key integrity
+Repository tests validate:
+- CRUD operations
+- Foreign key constraints
+- Constraint violation handling
+- Database integrity rules
+
+---
+
+## Data Integrity Strategy
+
+The application implements a **layered data integrity approach**:
+
+### 1. Database Layer (Primary Defense)
+- NOT NULL constraints for required fields
+- FOREIGN KEY constraints with appropriate DELETE behavior
+- UNIQUE constraints for business keys
+- CHECK constraints for domain rules
+
+### 2. JPA Layer (Documentation & Hints)
+- `nullable = false` in `@Column` and `@JoinColumn`
+- `optional = false` in relationship annotations
+- `@Version` for optimistic locking
+- Proper `FetchType` for performance
+
+### 3. Application Layer (Optional)
+- Bean Validation (`@NotNull`, `@NotBlank`, etc.) for user-friendly errors
+- Custom validation logic in services
+- DTO validation before persistence
+
+**Philosophy**: The database is the **ultimate source of truth**.
+Application-level validations enhance user experience but never replace database constraints.
 
 ---
 
@@ -205,17 +264,19 @@ At this stage:
 - Always follow the entity dependency hierarchy
 - The schema diagram must stay in sync with the database
 - Any schema change requires:
-    - updating the diagram
-    - updating entities
-    - validating repositories
+  - updating the diagram
+  - updating entities
+  - validating repositories
+- Database constraints must match JPA annotations
+- All constraint violations must be tested
 
 ---
 
 ## Next Steps
 
-1. Implement `Employee` entity
-2. Implement `EmployeeRepository`
-3. Validate foreign key behavior
-4. Continue with Level 2 entities
-
-
+1. ~~Implement `Employee` entity~~ ✅
+2. ~~Implement `EmployeeRepository`~~ ✅
+3. ~~Validate foreign key behavior~~ ✅
+4. Continue with Level 2 entities:
+  - `EmployeeProfile` (One-to-One)
+  - `EmployeeProject` join table (Many-to-Many)

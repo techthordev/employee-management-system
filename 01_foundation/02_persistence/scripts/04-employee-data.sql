@@ -1,3 +1,5 @@
+-- ========== INITIAL DATA ==========
+
 -- Departments
 INSERT INTO public.department (name) VALUES 
 ('IT'), ('HR'), ('Finance'), ('Marketing'), ('Sales'), ('Operations')

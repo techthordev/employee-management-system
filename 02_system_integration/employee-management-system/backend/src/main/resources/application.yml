@@ -10,7 +10,7 @@ spring:
   # Database Connection
   datasource:
     url: jdbc:postgresql://localhost:5432/employee_management
-    username: springconnector
+    username: ${DB_APP_USER}
     password: ${DB_APP_PASSWORD}
     driver-class-name: org.postgresql.Driver
 

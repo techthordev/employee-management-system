@@ -20,11 +20,12 @@ CREATE TABLE IF NOT EXISTS public.employee (
     first_name    VARCHAR(45)  NOT NULL,
     last_name     VARCHAR(45)  NOT NULL,
     email         VARCHAR(100) NOT NULL UNIQUE,
-    department_id BIGINT,
+    department_id BIGINT NOT NULL,
     version       BIGINT DEFAULT 0 NOT NULL,
     created_at    TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at    TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    CONSTRAINT fk_employee_department FOREIGN KEY (department_id) REFERENCES public.department(id) ON DELETE SET NULL
+    CONSTRAINT fk_employee_department FOREIGN KEY (department_id) 
+        REFERENCES public.department(id) ON DELETE RESTRICT  -- ✅ GEÄNDERT
 );
 
 -- 4. EMPLOYEE_PROJECTS (Join Table)
@@ -32,8 +33,10 @@ CREATE TABLE IF NOT EXISTS public.employee_projects (
     employee_id BIGINT NOT NULL,
     project_id  BIGINT NOT NULL,
     PRIMARY KEY (employee_id, project_id),
-    CONSTRAINT fk_employee FOREIGN KEY (employee_id) REFERENCES public.employee(id) ON DELETE CASCADE,
-    CONSTRAINT fk_project  FOREIGN KEY (project_id)  REFERENCES public.project(id)  ON DELETE CASCADE
+    CONSTRAINT fk_employee FOREIGN KEY (employee_id) 
+        REFERENCES public.employee(id) ON DELETE CASCADE,
+    CONSTRAINT fk_project  FOREIGN KEY (project_id)  
+        REFERENCES public.project(id)  ON DELETE CASCADE
 );
 
 -- 5. EMPLOYEE_PROFILE (One-to-One)
@@ -44,5 +47,7 @@ CREATE TABLE IF NOT EXISTS public.employee_profile (
     phone       VARCHAR(20),
     address     TEXT,
     created_at  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    CONSTRAINT fk_profile_employee FOREIGN KEY (employee_id) REFERENCES public.employee(id) ON DELETE CASCADE
+    CONSTRAINT fk_profile_employee FOREIGN KEY (employee_id) 
+        REFERENCES public.employee(id) ON DELETE CASCADE
 );
+
