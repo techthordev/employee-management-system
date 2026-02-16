@@ -74,6 +74,164 @@ DELETE /api/departments/{id}
 
 **Status:** Department API fully implemented and tested.
 
+## Layered Architecture - Deep Dive
+
+### Layer Flow & Responsibilities
+```
+┌─────────────────────────────────────────────────────────────┐
+│  HTTP Request (JSON)                                         │
+└────────────────────────┬────────────────────────────────────┘
+                         ▼
+         ┌───────────────────────────────┐
+         │   Controller Layer            │
+         │  - Receives HTTP requests     │
+         │  - Validates input (@Valid)   │
+         │  - Returns HTTP responses     │
+         └──────────┬────────────────────┘
+                    ▼
+         ┌───────────────────────────────┐
+         │   Service Layer               │
+         │  - Business logic             │
+         │  - Transaction management     │
+         │  - Orchestrates operations    │
+         └──────────┬────────────────────┘
+                    ▼
+         ┌───────────────────────────────┐
+         │   Repository Layer            │
+         │  - Database operations        │
+         │  - Query execution            │
+         └──────────┬────────────────────┘
+                    ▼
+         ┌───────────────────────────────┐
+         │   Database (PostgreSQL)       │
+         └───────────────────────────────┘
+```
+
+### Data Flow Example: Creating a Project
+
+**Request Flow (POST /api/projects):**
+
+1. **Controller receives DTO:**
+```json
+   POST /api/projects
+   {
+     "name": "Cloud Migration",
+     "description": "Migrate to AWS"
+   }
+```
+
+2. **Controller validates & delegates:**
+```java
+   @PostMapping
+   public ResponseEntity create(@Valid @RequestBody ProjectCreateRequest request) {
+       ProjectResponse response = projectService.create(request);
+       return ResponseEntity.status(HttpStatus.CREATED).body(response);
+   }
+```
+
+3. **Service converts DTO → Entity:**
+```java
+   public ProjectResponse create(ProjectCreateRequest request) {
+       Project project = projectMapper.toEntity(request);  // DTO → Entity
+       Project saved = projectRepository.save(project);     // Save to DB
+       return projectMapper.toResponse(saved);              // Entity → DTO
+   }
+```
+
+4. **Mapper performs conversion:**
+```java
+   // MapStruct generates this automatically
+   Project entity = new Project();
+   entity.setName(request.getName());
+   entity.setDescription(request.getDescription());
+```
+
+5. **Repository saves to database:**
+```
+   // Spring Data JPA executes:
+   // INSERT INTO project (name, description, created_at) VALUES (?, ?, ?)
+```
+
+6. **Response DTO returned to client:**
+```json
+   HTTP 201 Created
+   {
+     "id": 1,
+     "name": "Cloud Migration",
+     "description": "Migrate to AWS",
+     "createdAt": "2026-02-16T18:30:00-03:00"
+   }
+```
+
+### DTO Strategy by HTTP Method
+
+| HTTP Method | Request DTO | Response DTO | Purpose |
+|------------|-------------|--------------|---------|
+| **POST** | `*CreateRequest` | `*Response` | Create new resource |
+| **GET** | None (path params) | `*Response` or `List<*Response>` | Retrieve resource(s) |
+| **PUT** | `*UpdateRequest` | `*Response` | Update existing resource |
+| **DELETE** | None (path params) | None (204 No Content) | Delete resource |
+
+### Why Separate DTOs?
+
+**Security & Control:**
+- Clients cannot send `id` in CreateRequest (prevents overwriting)
+- Clients cannot modify `createdAt` timestamp
+- Server controls what data is exposed (no internal fields)
+
+**Validation:**
+- Different validation rules per operation
+- Clear API contract: "What can I send vs. what will I receive?"
+
+**Flexibility:**
+- Entity structure can change without breaking API
+- Support multiple API versions with different DTOs
+
+### MapStruct Auto-Generation
+
+MapStruct generates implementation at **compile time**:
+```java
+// You write:
+@Mapper(componentModel = "spring")
+public interface ProjectMapper {
+    ProjectResponse toResponse(Project project);
+}
+
+// MapStruct generates:
+@Component
+public class ProjectMapperImpl implements ProjectMapper {
+    public ProjectResponse toResponse(Project project) {
+        ProjectResponse response = new ProjectResponse();
+        response.setId(project.getId());
+        response.setName(project.getName());
+        response.setDescription(project.getDescription());
+        response.setCreatedAt(project.getCreatedAt());
+        return response;
+    }
+}
+```
+
+**Benefits:**
+- No runtime reflection overhead
+- Compile-time safety (errors caught early)
+- Easy to customize with `@Mapping` annotations
+
+## API Documentation
+
+Interactive API documentation available via Swagger UI:
+
+**Access:** http://localhost:8080/docs
+
+**Features:**
+- Test all endpoints directly in browser
+- View request/response schemas
+- See validation rules
+- Try out authentication (when implemented)
+
+**Current Endpoints:**
+- `/api/departments` - Department CRUD operations
+- `/api/projects` - Project CRUD operations
+
 ## Project Structure
 
 ```
