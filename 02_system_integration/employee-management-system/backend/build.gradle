@@ -8,6 +8,17 @@ group = 'br.com.techthordev'
 version = '0.0.1-SNAPSHOT'
 description = 'EMS Backend - Spring Boot 4 & Java 25'
 
+// Load .env file from the backend folder
+def envFile = file(".env")
+if (envFile.exists()) {
+	envFile.readLines().each { line ->
+		if (line.contains("=") && !line.startsWith("#")) {
+			def (key, value) = line.split("=", 2)
+			System.setProperty(key.trim(), value.trim())
+		}
+	}
+}
+
 java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(25)
@@ -49,6 +60,15 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+
+	systemProperty "DB_APP_USER", System.getProperty("DB_APP_USER")
+	systemProperty "DB_APP_PASSWORD", System.getProperty("DB_APP_PASSWORD")
+
+	testLogging {
+		events "passed", "skipped", "failed"
+		showExceptions true
+		exceptionFormat "full"
+	}
 }
 
 bootRun {

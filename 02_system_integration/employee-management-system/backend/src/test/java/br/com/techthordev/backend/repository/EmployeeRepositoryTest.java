@@ -1,55 +1,51 @@
 package br.com.techthordev.backend.repository;
 
+import br.com.techthordev.backend.base.BaseDomainTest;
 import br.com.techthordev.backend.entity.Department;
 import br.com.techthordev.backend.entity.Employee;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
-@ActiveProfiles("test")
-@Transactional
-public class EmployeeRepositoryTest {
-
-    @Autowired
-    EmployeeRepository employeeRepository;
-
-    @Autowired
-    DepartmentRepository departmentRepository;
+/**
+ * Integration test for Employee (Level 1).
+ * Inherits Level 0 factory methods from BaseDomainTest.
+ */
+@DisplayName("Employee Repository Tests (Level 1)")
+public class EmployeeRepositoryTest extends BaseDomainTest {
 
     @Test
+    @DisplayName("Should save employee when linked to a valid department")
     void shouldSaveEmployeeWithDepartment() {
 
-        Department department = new Department();
-        department.setName("Engineering");
+        // Arrange
+        Department department = createAndSaveDepartment("Engineering");
         department =  departmentRepository.save(department);
 
-        Employee employee = new Employee();
-        employee.setFirstName("John");
-        employee.setLastName("Doe");
-        employee.setEmail("johnd@techthordev.com.br");
-        employee.setDepartment(department);
+        // Act
+        Employee saved = createAndSaveEmployee(
+                "John", "Doe", "johnd@techthordev.com.br", department
+        );
 
-        Employee saved = employeeRepository.save(employee);
-
+        // Assert
         assertNotNull(saved.getId());
         assertEquals("Engineering", saved.getDepartment().getName());
-
     }
 
     @Test
+    @DisplayName("Should fail when saving employee without a department (NOT NULL constraint)")
     void shouldFailWhenDepartmentIsMissing() {
 
+        // Arrange
         Employee employee = new Employee();
         employee.setFirstName("John");
         employee.setLastName("Doe");
         employee.setEmail("johnd@techthordev.com.br");
 
+        // Act & Assert
         assertThrows(
             DataIntegrityViolationException.class,
             () -> employeeRepository.saveAndFlush(employee)
@@ -57,8 +53,10 @@ public class EmployeeRepositoryTest {
     }
 
     @Test
+    @DisplayName("Should fail when department ID does not exist in database (FK constraint)")
     void shouldFailWhenDepartmentDoesNotExist() {
 
+        // Arrange
         Department notRealDepartment = new Department();
         notRealDepartment.setId(999L); // not existing department
 
@@ -68,6 +66,7 @@ public class EmployeeRepositoryTest {
         employee.setEmail("johnd@techthordev.com.br");
         employee.setDepartment(notRealDepartment);
 
+        // Act & Assert
         assertThrows(
             DataIntegrityViolationException.class,
             () -> employeeRepository.saveAndFlush(employee),

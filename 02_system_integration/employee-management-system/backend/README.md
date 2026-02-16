@@ -3,12 +3,21 @@
 ## Overview
 
 This project is a **Spring Boot backend** for an Employee Management System.
-It exposes REST APIs consumed by an Angular frontend and uses **PostgreSQL**
-as its relational database.
+It exposes REST APIs consumed by an Angular frontend and uses **PostgreSQL**.
+The backend follows a layered architecture and a strict foreign-key–driven entity dependency strategy to ensure data integrity and maintainability.
 
-The backend follows a clean layered architecture and a strict
-foreign-key–driven entity dependency strategy to ensure data integrity
-and long-term maintainability.
+---
+
+## ADR Note
+
+This README follows **Architecture Decision Record (ADR) principles**:
+
+- **Context:** Backend entities require strict FK order and integrity.  
+- **Decision:** Use Level 0–2 entity dependency hierarchy, DB as source of truth.  
+- **Consequences:**  
+  - Incremental development and testing possible  
+  - Database enforces business rules  
+  - PNG diagram serves as authoritative model  
 
 ---
 
@@ -21,6 +30,7 @@ and long-term maintainability.
 - Gradle
 - Virtual Threads (Project Loom)
 - REST APIs
+- Lombok (`@Getter`, `@Setter`, `@NoArgsConstructor`)
 
 ---
 
@@ -37,111 +47,57 @@ br.com.techthordev.backend
 
 ````
 
-### Responsibilities
+**Responsibilities:**
 
-- **entity** – JPA mappings aligned with the database schema
-- **repository** – Spring Data JPA interfaces
-- **service** – Business logic and transaction handling
-- **controller** – REST endpoints
-- **config** – Security and infrastructure configuration
+- **entity** – JPA mappings aligned with the database schema  
+- **repository** – Spring Data JPA interfaces  
+- **service** – Business logic & transaction handling  
+- **controller** – REST endpoints  
+- **config** – Security & infrastructure configuration  
 
 ---
 
 ## Database Schema (public)
 
-The application uses the **PostgreSQL `public` schema**.
-
 ![Public Scheme](img/employee_management-public-scheme.png)
 
-The diagram is the **authoritative source of truth** for:
+The diagram is the **authoritative source of truth**:
 
-- table definitions
-- foreign key relationships
-- dependency hierarchy
-- creation order
+- table definitions  
+- foreign key relationships  
+- dependency hierarchy  
+- creation order  
 
-All entities must strictly match this schema.
-
-Hibernate is configured with:
+Hibernate is configured:
 
 ```yaml
 spring.jpa.hibernate.ddl-auto: validate
 ````
 
-This guarantees:
-
-* Schema mismatches prevent application startup
-* Entities cannot diverge from the database structure
-* Schema changes must be handled explicitly
-
-The database is the ultimate source of truth.
+Ensures schema alignment and prevents divergence.
 
 ---
 
 ## Entity Dependency Strategy
 
-The backend follows a strict foreign-key–based entity hierarchy.
-
-Entities are grouped into dependency levels based on database
-foreign key relationships.
-The level system defines:
-
-* creation order
-* test order
-* deletion safety
-* architectural boundaries
-
----
-
-## Dependency Levels
+Entities follow a **foreign-key–driven hierarchy**, grouped into dependency levels:
 
 ### Level 0 – Independent Tables
 
-Tables without foreign key dependencies.
-
-Characteristics:
-
-* No `@ManyToOne` or `@OneToOne` dependencies
-* Can be created, tested, and deleted independently
-* Form the structural foundation of the domain model
-
-Examples:
-
-* `Department`
-* `Project`
-
----
+* No foreign keys
+* Can be created and tested independently
+* Examples: `Department`, `Project`
 
 ### Level 1 – Simply Dependent Tables
 
-Tables that depend on exactly one Level 0 table.
-
-Characteristics:
-
-* Single foreign key dependency
-* Cannot exist without the referenced Level 0 entity
-* Represent primary domain ownership
-
-Example:
-
-* `Employee` → depends on `Department`
-
----
+* Depend on exactly one Level 0 entity
+* Example: `Employee` → `Department`
 
 ### Level 2 – Strongly Dependent Tables
 
-Tables that depend on Level 1 entities or represent composed relationships.
-
-Characteristics:
-
-* One-to-One or Many-to-Many relationships
-* Often implemented as extension or join tables
-* Exist only in context of owning entities
-
-Examples:
-
-* `EmployeeProfile` → One-to-One with `Employee`
-* `EmployeeProject` → Join table (`Employee` ↔ `Project`)
+* Depend on Level 1 or represent composed relationships
+* Include One-to-One or Many-to-Many entities
+* Examples: `EmployeeProfile` (1:1 → Employee), `EmployeeProject` (join table → Employee ↔ Project)
 
 ---
 
@@ -149,124 +105,88 @@ Examples:
 
 ### Level 0 – Completed
 
-Implemented:
-
-* `Department`
-* `Project`
-
-Includes:
-
-* JPA entities aligned with schema
-* Repositories
-* Integration tests against a real PostgreSQL instance
-
-Validated aspects:
-
-* Schema alignment (`ddl-auto: validate`)
-* ID generation
-* Optimistic locking (`@Version`)
-* CRUD behavior
-
----
+* `Department`, `Project`
+* Entities, Repositories, Integration Tests
+* Validated against PostgreSQL (`ddl-auto: validate`)
 
 ### Level 1 – Completed
 
-Implemented:
-
 * `Employee`
+* Dependency: FK `department_id` → `Department`
+* DB constraint: `ON DELETE RESTRICT`
+* Violations throw `DataIntegrityViolationException`
 
-Dependency:
+### Level 2 – Completed
 
-* Foreign key: `department_id`
-* `@ManyToOne` → `Department`
+* `EmployeeProfile`
 
-Database constraint:
+    * One-to-One with Employee
+    * Columns: `bio`, `phone`, `address`, `created_at`
+* `EmployeeProject`
 
-```sql
-FOREIGN KEY (department_id)
-REFERENCES public.department(id)
-ON DELETE RESTRICT
-```
+    * Join table between Employee ↔ Project
+    * Composite PK via `EmployeeProjectId`
+    * Ensures FK integrity and optional extension columns
 
-Integrity guarantees:
-
-* Employees must belong to a department
-* Departments with employees cannot be deleted
-* Violations result in `DataIntegrityViolationException`
-
----
-
-### Level 2 – Planned
-
-To be implemented:
-
-* `EmployeeProfile` (One-to-One with `Employee`)
-* `EmployeeProject` (Many-to-Many join table)
-
-These introduce stronger relational coupling and require
-explicit ownership and cascade decisions.
+**Note:** `EmployeeProjectId` is necessary to model the composite key for the join table. Without it, JPA cannot map `employee_id + project_id` as primary key.
 
 ---
 
 ## Repository Strategy
 
-Repositories follow the entity dependency hierarchy.
+Repositories respect dependency levels:
 
-Implemented:
+* Level 0: `DepartmentRepository`, `ProjectRepository`
+* Level 1: `EmployeeRepository`
+* Level 2: `EmployeeProfileRepository`, `EmployeeProjectRepository`
 
-* `DepartmentRepository`
-* `ProjectRepository`
-* `EmployeeRepository`
-
-Repository tests validate:
-
-* CRUD behavior
-* Foreign key enforcement
-* Constraint violation handling
+Integration tests validate CRUD and FK constraints.
 
 ---
 
 ## Data Integrity Strategy
 
-Integrity is enforced at multiple layers.
+1. **Database Layer:** NOT NULL, FK, UNIQUE, CHECK
+2. **JPA Layer:** `nullable=false`, `optional=false`, `@Version`
+3. **Application Layer:** Bean Validation, service-level rules
 
-### 1. Database Layer (Primary Enforcement)
-
-* NOT NULL constraints
-* FOREIGN KEY constraints
-* UNIQUE constraints
-* CHECK constraints
-
-### 2. JPA Layer (Schema Alignment)
-
-* `nullable = false`
-* `optional = false`
-* `@Version` for optimistic locking
-* Explicit fetch strategies
-
-### 3. Application Layer (Optional Enhancements)
-
-* Bean Validation
-* Service-level validation
-
-Database constraints are mandatory.
-Application-level validation improves UX but never replaces database rules.
+Database constraints are the ultimate source of truth. Application validations improve UX only.
 
 ---
 
 ## Development Rules
 
-* Follow the dependency hierarchy strictly
+* Follow dependency hierarchy strictly
 * Keep schema diagram and database in sync
 * Validate repositories after schema changes
-* Database constraints must match JPA annotations
-* Constraint violations must be tested explicitly
+* Test constraint violations explicitly
 
 ---
 
+## Test Specification & Strategy
+
+To ensure our architectural decisions (ADR) remain intact, we use a **Layered Integration Testing Strategy** (Level 0–2). These tests are not just unit checks; they are **Schema Validations** that ensure Java cannot bypass PostgreSQL's physical constraints.
+
+### 1. Rationale: Why we test this way
+* **Database as Authority:** We validate that JPA mappings perfectly align with PostgreSQL 18.2 via `hibernate.ddl-auto: validate`.
+* **Constraint Enforcement:** We explicitly trigger and catch `DataIntegrityViolationException` to prove that `NOT NULL`, `FOREIGN KEY`, and `UNIQUE` constraints are active.
+* **Documentation:** Tests are written as **Living Specifications** using `@DisplayName` to describe the business rules being enforced.
+
+### 2. Test Hierarchy levels
+| Level | Scope | Objectives | Failure Consequence |
+| :--- | :--- | :--- | :--- |
+| **0** | **Independent** | Verify tables (e.g., `Department`), Auditing, and `@Version` logic. | Total system instability. |
+| **1** | **Simple Dep.** | Verify 1:N relations (e.g., `Employee` → `Dept`) and `ON DELETE RESTRICT`. | Risk of orphaned records and data leaks. |
+| **2** | **Complex Rel.** | Verify 1:1 (`Profile`) and N:M (`Project`) via Composite Keys. | Corruption of business logic and reporting. |
+
+### 3. Execution & Reporting
+* **Environment:** Tests require the `test` profile to load the `.env` configuration for Podman.
+* **IDE View:** In IntelliJ, the test tree provides a readable report (e.g., `CONSTRAINT CHECK: Must reject null FK`).
+* **Command:** Run via CLI: `./gradlew clean test`.
+
 ## Next Steps
 
-* Implement Level 2 entities
-* Define ownership and cascade strategies
-* Extend repository integration tests accordingly
+* Extend Level 2 entities with optional attributes if needed
+* Update integration tests
+* Maintain PNG diagram alignment
 

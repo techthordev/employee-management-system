@@ -1,0 +1,16 @@
+package br.com.techthordev.backend.base;
+
+import br.com.techthordev.backend.DemoApplication;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
+
+/**
+ * Base class for all integration tests.
+ * Sets up the Spring context and ensures transactions are rolled back.
+ */
+@SpringBootTest
+@ActiveProfiles("test")
+@Transactional
+public class BaseIntegrationTest {
+}
