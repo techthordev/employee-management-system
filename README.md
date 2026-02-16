@@ -1,82 +1,74 @@
 # 🎓 Full-Stack Learning Journey (Fedora)
 
-This repository documents the step-by-step development of a modern Enterprise application, leveraging the latest technologies and a professional DevOps workflow on Fedora Linux.
+This repository documents my step-by-step evolution into modern Enterprise development, leveraging the latest technologies and a professional DevOps workflow on Fedora Linux.
 
 ---
 
-## 📂 Project Structure
+## 📂 Learning Modules
 
-### [01_Foundation](https://www.google.com/search?q=./01_Foundation)
+### [01_foundation/](./01_foundation/)
 
-The core infrastructure and development environment.
+The core building blocks and environmental setup.
 
-* **[stack/](https://www.google.com/search?q=./01_Foundation/stack)**: Configuration for **Java 25** and **Gradle 9.3**, focusing on Virtual Threads and Structured Concurrency.
-* **[persistence/](https://www.google.com/search?q=./01_Foundation/persistence)**: Containerized **PostgreSQL 18** setup via Podman.
-* Implements all Hibernate relationship types: `@OneToOne`, `@OneToMany`, and `@ManyToMany`.
-* Features automated `updated_at` triggers and Optimistic Locking (`version`).
-* Secure initialization via shell-based user and database creation.
+* **01_stack**: Deep dive into **Java 25** (Virtual Threads) and **Gradle 9.3**.
+* **02_persistence**: Advanced **PostgreSQL 18** patterns, including triggers, optimistic locking, and relationship types (`@OneToOne`, `@OneToMany`, `@ManyToMany`).
 
+### [02_system_integration/](./02_system_integration/)
 
+🚀 **The Main Project: Employee Management System (EMS)**
+This is a production-grade integration of all concepts into a single cohesive solution.
 
-### [02_Backend](https://www.google.com/search?q=./02_Backend)
+* **backend/**: **Spring Boot 4.0** (Spring 7) API using Project Loom.
+* **frontend/**: **Angular 21** Signals-first standalone application.
+* **Documentation**: Follows strict ADR (Architecture Decision Records) and a Layered Integration Testing Strategy.
 
-The server-side application logic built with **Spring Boot 4.0** (Spring Framework 7).
+### [03_gitlab/](./03_gitlab/)
 
-* High-performance processing using **Project Loom** (Virtual Threads).
-* Secure identity management via a dedicated `auth` schema.
-
-### [03_Frontend](https://www.google.com/search?q=./03_Frontend)
-
-A modern user interface developed with **Angular 21**.
-
-* **Signals-first** architecture for reactive state management.
-* Standalone components to eliminate `NgModules`.
-
-### [04_GitLab](https://www.google.com/search?q=./04_GitLab)
-
-DevOps and version control standards for the project.
+DevOps and professional version control standards.
 
 * Workflow integration using the **GitLab CLI (`glab`)**.
-* Automated CI/CD pipeline definitions for building and testing.
-
-### [05_System_Integration](https://www.google.com/search?q=./05_System_Integration)
-
-🚀 The final production-grade **Employee Management System (EMS)**, integrating all previous modules into a cohesive solution.
+* Automated CI/CD pipeline definitions and repository management.
 
 ---
 
 ## 🛠️ Technical Stack Summary
 
-| Component | Technology | Version |
-| --- | --- | --- |
-| **OS** | Fedora Linux | Native |
-| **Runtime** | Java | 25 |
-| **Framework** | Spring Boot | 4.0+ |
-| **Frontend** | Angular | 21+ |
-| **Database** | PostgreSQL | 18 |
-| **Container** | Podman | Native |
-| **Build Tool** | Gradle (Groovy) | 9.3 |
+| Component | Technology | Version | Key Feature |
+| --- | --- | --- | --- |
+| **OS** | Fedora Linux | Native | Podman-native infrastructure |
+| **Runtime** | Java | 25 | Virtual Threads (Loom) |
+| **Framework** | Spring Boot | 4.0+ | Spring Framework 7 |
+| **Frontend** | Angular | 21+ | Signals-first / No NgModules |
+| **Database** | PostgreSQL | 18 | Migrations via Flyway |
+| **Build Tool** | Gradle | 9.3+ | Groovy DSL |
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Quick Start
 
 1. **Clone the repository**:
 ```bash
-git clone git@gitlab.com:techthordev/learning.git
+glab repo clone techthordev/learning
 
 ```
 
 
-2. **Initialize Infrastructure**:
-Navigate to `01_Foundation/persistence` and start the database:
+2. **Navigate to the Main Project**:
 ```bash
-podman compose up -d
+cd 02_system_integration/employee-management-system
 
 ```
 
 
-3. **Check Status**:
+3. **Start Infrastructure (Backend)**:
 ```bash
-glab repo view
+cd backend && podman-compose up -d
+
+```
+
+
+4. **Run Verified Tests**:
+```bash
+./gradlew clean test
+
 ```
