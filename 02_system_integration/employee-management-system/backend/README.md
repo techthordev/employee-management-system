@@ -264,6 +264,7 @@ void setUp() {
 - DTO pattern (CreateRequest, UpdateRequest, Response)
 - MapStruct for entity/DTO mapping
 - Transaction management with @Transactional
+- Integration tests with BaseDomainTest
 
 ### Controller Layer (Completed ✅)
 - DepartmentController with REST endpoints
@@ -271,11 +272,13 @@ void setUp() {
 - Proper HTTP status codes (201, 200, 204)
 - Security disabled for development (permitAll)
 
+### API Documentation (In Progress)
+- Swagger/OpenAPI integration planned
+
 ### Remaining Implementation (Planned)
 - Complete Service + Controller for: Project, Employee, EmployeeProfile, EmployeeProject
 - Global Exception Handling (EntityNotFoundException, BusinessRuleException)
-- API documentation with Swagger/OpenAPI
-- Controller integration tests
+- Controller integration tests (optional)
 
 ### Security & Production Readiness (Future)
 - Authentication & Authorization (JWT)
@@ -283,4 +286,3 @@ void setUp() {
 - API rate limiting
 - Logging & monitoring
 - Production database migration strategy
-
