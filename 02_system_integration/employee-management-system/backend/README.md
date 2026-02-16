@@ -184,9 +184,56 @@ To ensure our architectural decisions (ADR) remain intact, we use a **Layered In
 * **IDE View:** In IntelliJ, the test tree provides a readable report (e.g., `CONSTRAINT CHECK: Must reject null FK`).
 * **Command:** Run via CLI: `./gradlew clean test`.
 
+### 4. Test Isolation & Data Cleanup
+
+**Problem:** Spring's `@Transactional` rollback doesn't always clear test data when using `saveAndFlush()`, causing unique constraint violations in subsequent tests.
+
+**Solution:** Explicit cleanup in `BaseDomainTest`:
+```java
+@BeforeEach
+void setUp() {
+    // Explicit cleanup before each test
+    // Order matters due to Foreign Key constraints!
+    employeeProjectRepository.deleteAll();
+    employeeRepository.deleteAll();
+    projectRepository.deleteAll();
+    departmentRepository.deleteAll();
+    
+    // Force commit to database
+    employeeProjectRepository.flush();
+}
+```
+
+**Why this works:**
+- `deleteAll()` marks entities for deletion
+- `flush()` forces immediate execution of DELETE statements
+- Deletion order respects FK constraints (children before parents)
+- Each test starts with a clean slate
+
+**Alternative considered:** UUID suffixes on test data were used initially but removed in favor of proper cleanup for more precise assertions.
+
 ## Next Steps
 
-* Extend Level 2 entities with optional attributes if needed
-* Update integration tests
-* Maintain PNG diagram alignment
+### Repository Layer (Completed ✅)
+- All Level 0-2 entities implemented and tested
+- FK constraints validated
+- Test isolation strategy established
+
+### Service Layer (In Progress)
+- Implement business logic for Employee CRUD operations
+- Add transaction management
+- Handle cascade operations for dependent entities
+- Validate business rules before database operations
+
+### Controller Layer (Planned)
+- Expose REST endpoints for frontend consumption
+- Implement DTOs for API contracts
+- Add exception handling and error responses
+- Document API with Swagger/OpenAPI
+
+### Security & Production Readiness (Future)
+- Authentication & Authorization
+- API rate limiting
+- Logging & monitoring
+- Production database migration strategy
 
