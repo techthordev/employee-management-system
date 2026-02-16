@@ -16,6 +16,7 @@ import java.time.OffsetDateTime;
 public class EmployeeProfile {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     /**
