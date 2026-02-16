@@ -1,5 +1,6 @@
 package br.com.techthordev.backend.config;
 
+import org.springframework.boot.security.autoconfigure.actuate.web.reactive.EndpointRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,6 +16,8 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/docs/**", "/api-docs/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+
                         .anyRequest().permitAll()
                 );
 
