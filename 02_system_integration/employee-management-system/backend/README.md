@@ -34,6 +34,46 @@ This README follows **Architecture Decision Record (ADR) principles**:
 
 ---
 
+## API Architecture
+
+The backend follows a **layered architecture** with clear separation of concerns:
+
+### Layers
+1. **Controller Layer** - REST endpoints, request/response handling
+2. **Service Layer** - Business logic, transactions
+3. **Repository Layer** - Data access
+4. **Entity Layer** - JPA mappings
+
+### DTO Pattern
+All API operations use Data Transfer Objects (DTOs):
+- **Request DTOs** (`*CreateRequest`, `*UpdateRequest`) - Input validation with Bean Validation
+- **Response DTOs** (`*Response`) - Consistent API responses
+- **Mapping** - MapStruct handles entity ↔ DTO conversion
+
+### Example: Department API
+```bash
+# Create
+POST /api/departments
+Content-Type: application/json
+{"name": "Engineering"}
+
+# List All
+GET /api/departments
+
+# Get By ID
+GET /api/departments/{id}
+
+# Update
+PUT /api/departments/{id}
+Content-Type: application/json
+{"name": "Engineering Updated"}
+
+# Delete
+DELETE /api/departments/{id}
+```
+
+**Status:** Department API fully implemented and tested.
+
 ## Project Structure
 
 ```
@@ -219,20 +259,27 @@ void setUp() {
 - FK constraints validated
 - Test isolation strategy established
 
-### Service Layer (In Progress)
-- Implement business logic for Employee CRUD operations
-- Add transaction management
-- Handle cascade operations for dependent entities
-- Validate business rules before database operations
+### Service Layer (Completed ✅)
+- DepartmentService with full CRUD operations
+- DTO pattern (CreateRequest, UpdateRequest, Response)
+- MapStruct for entity/DTO mapping
+- Transaction management with @Transactional
 
-### Controller Layer (Planned)
-- Expose REST endpoints for frontend consumption
-- Implement DTOs for API contracts
-- Add exception handling and error responses
-- Document API with Swagger/OpenAPI
+### Controller Layer (Completed ✅)
+- DepartmentController with REST endpoints
+- Bean Validation (@Valid) integration
+- Proper HTTP status codes (201, 200, 204)
+- Security disabled for development (permitAll)
+
+### Remaining Implementation (Planned)
+- Complete Service + Controller for: Project, Employee, EmployeeProfile, EmployeeProject
+- Global Exception Handling (EntityNotFoundException, BusinessRuleException)
+- API documentation with Swagger/OpenAPI
+- Controller integration tests
 
 ### Security & Production Readiness (Future)
-- Authentication & Authorization
+- Authentication & Authorization (JWT)
+- CORS configuration for Angular frontend
 - API rate limiting
 - Logging & monitoring
 - Production database migration strategy
