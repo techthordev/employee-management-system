@@ -4,8 +4,10 @@ import br.com.techthordev.backend.entity.Department;
 import br.com.techthordev.backend.entity.Employee;
 import br.com.techthordev.backend.entity.Project;
 import br.com.techthordev.backend.repository.DepartmentRepository;
+import br.com.techthordev.backend.repository.EmployeeProjectRepository;
 import br.com.techthordev.backend.repository.EmployeeRepository;
 import br.com.techthordev.backend.repository.ProjectRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -17,6 +19,20 @@ public class BaseDomainTest extends BaseIntegrationTest {
     @Autowired protected DepartmentRepository departmentRepository;
     @Autowired protected EmployeeRepository employeeRepository;
     @Autowired protected ProjectRepository projectRepository;
+    @Autowired protected EmployeeProjectRepository employeeProjectRepository;
+
+    @BeforeEach
+    void setUp() {
+        // Explicit cleanup before each test
+        // Order matters due to Foreign Key constraints!
+        employeeProjectRepository.deleteAll();
+        employeeRepository.deleteAll();
+        projectRepository.deleteAll();
+        departmentRepository.deleteAll();
+
+        // Force commit to database
+        employeeProjectRepository.flush();
+    }
 
     // --- Level 0 Helpers ---
 
@@ -28,7 +44,7 @@ public class BaseDomainTest extends BaseIntegrationTest {
 
     protected Project createAndSaveProject(String name) {
         Project project = new Project();
-        project.setName(name);
+        project.setName(name); // No UUID suffix needed anymore
         return projectRepository.save(project);
     }
 
