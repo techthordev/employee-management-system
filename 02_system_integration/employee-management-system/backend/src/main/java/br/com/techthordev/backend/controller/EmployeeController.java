@@ -1,8 +1,12 @@
 package br.com.techthordev.backend.controller;
 
 import br.com.techthordev.backend.dto.request.EmployeeCreateRequest;
+import br.com.techthordev.backend.dto.request.EmployeeProfileCreateRequest;
+import br.com.techthordev.backend.dto.request.EmployeeProfileUpdateRequest;
 import br.com.techthordev.backend.dto.request.EmployeeUpdateRequest;
+import br.com.techthordev.backend.dto.response.EmployeeProfileResponse;
 import br.com.techthordev.backend.dto.response.EmployeeResponse;
+import br.com.techthordev.backend.service.EmployeeProfileService;
 import br.com.techthordev.backend.service.EmployeeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +22,9 @@ import java.util.List;
 public class EmployeeController {
 
     private final EmployeeService employeeService;
+    private final EmployeeProfileService employeeProfileService;
+
+    // Employee Endpoints
 
     @PostMapping
     public ResponseEntity<EmployeeResponse> create(@Valid @RequestBody EmployeeCreateRequest request) {
@@ -48,6 +55,36 @@ public class EmployeeController {
     @DeleteMapping("/{id}")
     public ResponseEntity<EmployeeResponse> delete(@PathVariable Long id) {
         employeeService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    // EmployeeProfile Endpoints (nested)
+
+    @PostMapping("/{employeeId}/profile")
+    public ResponseEntity<EmployeeProfileResponse> createProfile(
+            @PathVariable Long employeeId,
+            @Valid @RequestBody EmployeeProfileCreateRequest request) {
+        EmployeeProfileResponse response = employeeProfileService.create(employeeId, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping("/{employeeId}/profile")
+    public ResponseEntity<EmployeeProfileResponse> getProfile(@PathVariable Long employeeId) {
+        EmployeeProfileResponse response = employeeProfileService.findByEmployeeId(employeeId);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{employeeId}/profile")
+    public ResponseEntity<EmployeeProfileResponse> updateProfile(
+            @PathVariable Long employeeId,
+            @Valid @RequestBody EmployeeProfileUpdateRequest request) {
+        EmployeeProfileResponse response = employeeProfileService.update(employeeId, request);
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{employeeId}/profile")
+    public ResponseEntity<Void> deleteProfile(@PathVariable Long employeeId) {
+        employeeProfileService.delete(employeeId);
         return ResponseEntity.noContent().build();
     }
 }
