@@ -410,37 +410,116 @@ void setUp() {
 
 **Alternative considered:** UUID suffixes on test data were used initially but removed in favor of proper cleanup for more precise assertions.
 
-## Next Steps
+## Current Status
 
-### Repository Layer (Completed ✅)
-- All Level 0-2 entities implemented and tested
-- FK constraints validated
-- Test isolation strategy established
+### ✅ Completed Features
 
-### Service Layer (Completed ✅)
-- DepartmentService with full CRUD operations
+#### Database Layer
+- PostgreSQL 18 with full schema migrations (Flyway)
+- All entities implemented (Department, Project, Employee, EmployeeProfile, EmployeeProject)
+- Relationship constraints (FK, Unique, Composite Keys)
+- Optimistic locking with `@Version`
+- Audit fields (`created_at`, `updated_at`)
+
+#### Repository Layer
+- Spring Data JPA repositories for all entities
+- Custom queries for complex relationships
+- Comprehensive integration tests
+- Test isolation strategy with explicit cleanup
+
+#### Service Layer
+- Complete business logic for all entities
 - DTO pattern (CreateRequest, UpdateRequest, Response)
-- MapStruct for entity/DTO mapping
-- Transaction management with @Transactional
-- Integration tests with BaseDomainTest
+- MapStruct for entity/DTO conversion
+- Transaction management with `@Transactional`
+- Validation and error handling
 
-### Controller Layer (Completed ✅)
-- DepartmentController with REST endpoints
-- Bean Validation (@Valid) integration
-- Proper HTTP status codes (201, 200, 204)
-- Security disabled for development (permitAll)
+#### Controller Layer (REST API)
+- Full CRUD operations for all resources
+- RESTful endpoint design with proper HTTP status codes
+- Bean Validation integration
+- Nested endpoints for relationships (profiles, projects)
+- Comprehensive OpenAPI/Swagger documentation
 
-### API Documentation (In Progress)
-- Swagger/OpenAPI integration planned
+#### API Documentation
+- Interactive Swagger UI at `/docs`
+- Complete endpoint descriptions and examples
+- HTTP status code documentation
+- Error scenario explanations
 
-### Remaining Implementation (Planned)
-- Complete Service + Controller for: Project, Employee, EmployeeProfile, EmployeeProject
-- Global Exception Handling (EntityNotFoundException, BusinessRuleException)
-- Controller integration tests (optional)
+### 📋 API Endpoints
 
-### Security & Production Readiness (Future)
-- Authentication & Authorization (JWT)
-- CORS configuration for Angular frontend
+**Departments** (`/api/departments`)
+- `POST   /` - Create department
+- `GET    /` - List all departments
+- `GET    /{id}` - Get department by ID
+- `PUT    /{id}` - Update department
+- `DELETE /{id}` - Delete department
+
+**Projects** (`/api/projects`)
+- `POST   /` - Create project
+- `GET    /` - List all projects
+- `GET    /{id}` - Get project by ID
+- `PUT    /{id}` - Update project
+- `DELETE /{id}` - Delete project
+
+**Employees** (`/api/employees`)
+- `POST   /` - Create employee
+- `GET    /` - List all employees
+- `GET    /{id}` - Get employee by ID
+- `PUT    /{id}` - Update employee
+- `DELETE /{id}` - Delete employee
+
+**Employee Profiles** (`/api/employees/{employeeId}/profile`)
+- `POST   /` - Create profile (1:1 relationship)
+- `GET    /` - Get profile
+- `PUT    /` - Update profile
+- `DELETE /` - Delete profile
+
+**Employee Projects** (`/api/employees/{employeeId}/projects`)
+- `POST   /` - Assign project to employee (N:M relationship)
+- `GET    /` - List employee's projects
+- `DELETE /{projectId}` - Remove project assignment
+
+### 🔜 Next Steps
+
+#### Security Layer (In Progress)
+- JWT-based authentication
+- Role-based access control (ADMIN, USER)
+- User entity and authentication endpoints
+- Password encryption with BCrypt
+- Secure endpoint protection
+
+#### Frontend Integration (Planned)
+- Angular frontend development
+- API integration with HttpClient
+- Responsive UI with Angular Material
+- State management
+- Form validation
+
+#### Production Readiness (Future)
+- Global exception handling refinement
 - API rate limiting
-- Logging & monitoring
-- Production database migration strategy
+- CORS configuration
+- Logging & monitoring (ELK Stack)
+- Docker containerization
+- CI/CD pipeline
+- Production database optimization
+
+## Testing
+
+### Test Coverage
+- **Repository Tests:** All entities with FK constraint validation
+- **Service Tests:** Business logic validation (sample implementation)
+- **Integration Tests:** Full stack testing with test database
+
+### Running Tests
+```bash
+./gradlew test
+```
+
+### Test Strategy
+See [test.md](test.md) for detailed testing specification including:
+- Level-based test hierarchy (0, 1, 2)
+- Test isolation strategy
+- FK constraint validation approach
