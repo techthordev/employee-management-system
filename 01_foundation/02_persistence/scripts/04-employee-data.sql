@@ -22,7 +22,7 @@ INSERT INTO public.employee (first_name, last_name, email, department_id) VALUES
 ON CONFLICT (email) DO NOTHING;
 
 -- Join-Table Assignments
-INSERT INTO public.employee_projects (employee_id, project_id)
+INSERT INTO public.employee_project (employee_id, project_id)
 SELECT e.id, p.id FROM public.employee e, public.project p
 WHERE (e.email = 'lucas@techthordev.com.br' AND p.name = 'EMS Upgrade')
 ON CONFLICT DO NOTHING;

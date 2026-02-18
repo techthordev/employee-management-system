@@ -1,12 +1,11 @@
 package br.com.techthordev.backend.controller;
 
-import br.com.techthordev.backend.dto.request.EmployeeCreateRequest;
-import br.com.techthordev.backend.dto.request.EmployeeProfileCreateRequest;
-import br.com.techthordev.backend.dto.request.EmployeeProfileUpdateRequest;
-import br.com.techthordev.backend.dto.request.EmployeeUpdateRequest;
+import br.com.techthordev.backend.dto.request.*;
 import br.com.techthordev.backend.dto.response.EmployeeProfileResponse;
+import br.com.techthordev.backend.dto.response.EmployeeProjectResponse;
 import br.com.techthordev.backend.dto.response.EmployeeResponse;
 import br.com.techthordev.backend.service.EmployeeProfileService;
+import br.com.techthordev.backend.service.EmployeeProjectService;
 import br.com.techthordev.backend.service.EmployeeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +22,7 @@ public class EmployeeController {
 
     private final EmployeeService employeeService;
     private final EmployeeProfileService employeeProfileService;
+    private final EmployeeProjectService employeeProjectService;
 
     // Employee Endpoints
 
@@ -85,6 +85,30 @@ public class EmployeeController {
     @DeleteMapping("/{employeeId}/profile")
     public ResponseEntity<Void> deleteProfile(@PathVariable Long employeeId) {
         employeeProfileService.delete(employeeId);
+        return ResponseEntity.noContent().build();
+    }
+
+    // EmployeeProject Endpoints (NEW!)
+
+    @PostMapping("/{employeeId}/projects")
+    public ResponseEntity<EmployeeProjectResponse> assignProject(
+            @PathVariable Long employeeId,
+            @Valid @RequestBody EmployeeProjectCreateRequest request) {
+        EmployeeProjectResponse response = employeeProjectService.assignProject(employeeId, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping("/{employeeId}/projects")
+    public ResponseEntity<List<EmployeeProjectResponse>> getProjects(@PathVariable Long employeeId) {
+        List<EmployeeProjectResponse> responses = employeeProjectService.findProjectsByEmployee(employeeId);
+        return ResponseEntity.ok(responses);
+    }
+
+    @DeleteMapping("/{employeeId}/projects/{projectId}")
+    public ResponseEntity<Void> removeProject(
+            @PathVariable Long employeeId,
+            @PathVariable Long projectId) {
+        employeeProjectService.removeProject(employeeId, projectId);
         return ResponseEntity.noContent().build();
     }
 }
