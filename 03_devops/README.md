@@ -1,102 +1,120 @@
-# Module 04: GitLab & DevOps Workflow
+# Employee Management System
+## Modular Fullstack Architecture – Backend, Integration & DevOps
 
-This module documents the professional version control workflow and DevOps integration for the entire learning journey, specifically tailored for GitLab on **Fedora Linux**.
+This repository documents a structured, production-oriented engineering journey.
+It evolves from backend fundamentals to full system integration and professional DevOps workflows.
 
----
-
-## 🛠️ Tooling & Authentication
-
-### GitLab CLI (`glab`)
-
-We use the official GitLab CLI to manage repositories, pipelines, and issues directly from the Fedora terminal.
-
-* **Status Check:** `glab auth status`
-* **Repository View:** `glab repo view`
-
-### SSH Authentication
-
-To ensure secure and passwordless communication, we use SSH keys (ED25519) shared across platforms (GitLab/GitHub).
-
-* **Key Location:** `~/.ssh/id_ed25519`
-* **Configuration:** Remote URLs are set to `git@gitlab.com:...` to leverage the **SSH-agent** natively on Fedora.
+The project is organized into independent modules that progressively build a real-world fullstack system.
 
 ---
 
-## 🔍 Environment & Context Validation
+# 📦 Repository Structure
 
-Before pushing any code, always verify that you are working in the correct repository context.
-
-### Verify Remote Repository (`glab`)
-
-Use this command to see the current project name, description, and URL:
-
-```bash
-glab repo view
-
-```
-
-### Verify Remote URLs (`git`)
-
-To check the exact fetch/push endpoints and ensure SSH is used instead of HTTPS:
-
-```bash
-git remote -v
-
-```
-
-### Open Repository in Browser
-
-Quickly open the GitLab web interface for the current project:
-
-```bash
-glab repo view -w
-
-```
+01_foundation  
+02_system_integration  
+03_devops  
 
 ---
 
-## 🚀 Git Workflow Standards
+## 01 – Foundation
 
-### Branching Policy
+Core backend engineering using:
 
-* **Main Branch:** The `main` branch is the source of truth.
-* **Protection:** The `main` branch is protected on GitLab to prevent accidental forced pushes, ensuring stability for CI/CD.
+- Java 25
+- Spring Boot
+- Gradle
+- RESTful API design
+- JPA / Hibernate
+- Flyway migrations
+- YAML-based configuration
+- Clean architecture principles
 
-### Essential Commands
-
-1. **Initialize & Link:**
-
-```bash
-git init
-git branch -M main
-git remote add origin git@gitlab.com:techthordev/<repo-name>.git
-
-```
-
-2. **Commit & Push:**
-
-```bash
-git add .
-git commit -m "feat: descriptive message"
-git push -u origin main
-
-```
+Focus: stable, maintainable backend foundations.
 
 ---
 
-## 🤖 CI/CD Integration (Planned)
+## 02 – System Integration
 
-The project is prepared for GitLab CI/CD integration using `.gitlab-ci.yml`.
+Fullstack wiring and application integration:
 
-* **Build:** Automated **Gradle 9.3** builds for **Java 25**.
-* **Test:** Execution of **JUnit 5** tests.
-* **Containerize:** Building images via **Podman/Buildah** for the GitLab Container Registry.
+- Angular frontend
+- DTO mapping strategy
+- REST consumption
+- Error handling strategy
+- Cross-origin configuration
+- Logging preparation
+
+Focus: real-world system composition and interaction.
 
 ---
 
-## 💡 Best Practices
+## 03 – DevOps
 
-* **CLI over GUI:** Prefer `glab` and `git` CLI for speed and automation on Fedora.
-* **Atomic Commits:** Keep commits small and focused.
-* **SSH over HTTPS:** Avoid PAT (Personal Access Tokens) by using SSH keys.
-* **Fedora Native:** Utilize Fedora's native Git and SSH integration.
+Professional version control and CI/CD preparation:
+
+- GitHub (Primary – Public Repository)
+- GitLab (Automatic Push Mirror)
+- SSH-only authentication (ED25519)
+- Protected main branch
+- CLI-first workflow (Fedora Linux)
+
+Prepared for:
+
+- GitLab CI/CD
+- GitHub Actions
+- Gradle build automation
+- JUnit 5 test execution
+- Containerization (Podman / Buildah)
+
+---
+
+# 🔄 Repository Strategy
+
+GitHub is the public source of truth.  
+GitLab acts as an automatic mirror and CI/CD environment.
+
+A single `git push` synchronizes both platforms.
+
+No HTTPS.  
+No Personal Access Tokens.  
+SSH-only secure workflow.
+
+---
+
+# 🚀 Tech Stack
+
+Backend:
+- Java 25
+- Spring Boot
+- Gradle
+- Flyway
+- PostgreSQL
+
+Frontend:
+- Angular
+- TypeScript
+
+DevOps:
+- Git
+- GitHub
+- GitLab
+- Fedora Linux
+- Podman / Buildah
+
+---
+
+# 💡 Engineering Principles
+
+- Modular structure
+- Atomic commits
+- Platform-neutral DevOps
+- CLI-driven workflow
+- Production-oriented thinking
+
+---
+
+# 📈 Project Status
+
+Actively evolving.
+CI/CD integration in preparation.
+Containerization planned.
