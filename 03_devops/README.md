@@ -1,83 +1,72 @@
 # Employee Management System
-## Modular Fullstack Architecture – Backend, Integration & DevOps
+### Modular Fullstack Architecture – Spring Boot • Angular • DevOps
 
-This repository documents a structured, production-oriented engineering journey.
-It evolves from backend fundamentals to full system integration and professional DevOps workflows.
+![Java](https://img.shields.io/badge/Java-25-blue)
+![Gradle](https://img.shields.io/badge/Gradle-9.x-green)
+![License](https://img.shields.io/badge/License-MIT-lightgrey)
+![Status](https://img.shields.io/badge/Status-Active%20Development-brightgreen)
 
-The project is organized into independent modules that progressively build a real-world fullstack system.
+A structured, production-oriented engineering project evolving from backend foundations to full system integration and professional DevOps workflows.
+
+---
+
+# 🏗 Architecture Overview
+
+```mermaid
+flowchart LR
+    A[Angular Frontend] --> B[Spring Boot REST API]
+    B --> C[(PostgreSQL)]
+    B --> D[Flyway Migration]
+    B --> E[JUnit Tests]
+    F[GitHub] -->|Mirror Push| G[GitLab CI/CD]
+``` id="m1v9qz"
 
 ---
 
-# 📦 Repository Structure
-
-01_foundation  
-02_system_integration  
-03_devops  
-
----
+# 📦 Repository Modules
 
 ## 01 – Foundation
-
-Core backend engineering using:
-
-- Java 25
+Backend fundamentals:
 - Spring Boot
-- Gradle
-- RESTful API design
+- REST API design
 - JPA / Hibernate
-- Flyway migrations
-- YAML-based configuration
-- Clean architecture principles
-
-Focus: stable, maintainable backend foundations.
-
----
+- Flyway
+- YAML configuration
+- Clean architecture
 
 ## 02 – System Integration
-
-Fullstack wiring and application integration:
-
+Fullstack integration:
 - Angular frontend
-- DTO mapping strategy
-- REST consumption
-- Error handling strategy
-- Cross-origin configuration
+- DTO mapping
+- CORS configuration
 - Logging preparation
-
-Focus: real-world system composition and interaction.
-
----
+- Error handling strategy
 
 ## 03 – DevOps
-
-Professional version control and CI/CD preparation:
-
-- GitHub (Primary – Public Repository)
-- GitLab (Automatic Push Mirror)
-- SSH-only authentication (ED25519)
-- Protected main branch
+Professional version control & CI strategy:
+- GitHub (Public Primary)
+- GitLab (Automatic Mirror)
+- SSH-only authentication
+- Protected `main` branch
 - CLI-first workflow (Fedora Linux)
 
 Prepared for:
-
 - GitLab CI/CD
 - GitHub Actions
-- Gradle build automation
-- JUnit 5 test execution
-- Containerization (Podman / Buildah)
+- Container builds (Podman / Buildah)
 
 ---
 
 # 🔄 Repository Strategy
 
-GitHub is the public source of truth.  
-GitLab acts as an automatic mirror and CI/CD environment.
+GitHub = Public Source of Truth  
+GitLab = Automatic Push Mirror + CI  
 
-A single `git push` synchronizes both platforms.
+Single push → synchronized platforms.
 
-No HTTPS.  
-No Personal Access Tokens.  
-SSH-only secure workflow.
+Secure SSH workflow.
+No PAT tokens.
+No HTTPS remotes.
 
 ---
 
@@ -103,18 +92,19 @@ DevOps:
 
 ---
 
-# 💡 Engineering Principles
+# 📈 Development Status
 
-- Modular structure
-- Atomic commits
-- Platform-neutral DevOps
-- CLI-driven workflow
-- Production-oriented thinking
+- Modular architecture established
+- CI/CD preparation in progress
+- Containerization roadmap defined
+- Continuous refinement ongoing
 
 ---
 
-# 📈 Project Status
+# 💡 Engineering Philosophy
 
-Actively evolving.
-CI/CD integration in preparation.
-Containerization planned.
+- Atomic commits
+- Modular growth
+- Platform-neutral DevOps
+- Production-oriented thinking
+- CLI-driven workflow
