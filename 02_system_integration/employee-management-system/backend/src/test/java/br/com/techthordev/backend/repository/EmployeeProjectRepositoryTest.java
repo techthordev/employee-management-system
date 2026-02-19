@@ -13,7 +13,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.springframework.util.Assert.isInstanceOf;
 
 @DisplayName("Level 2: EmployeeProject Repository (N:M Composite PK)")
 class EmployeeProjectRepositoryTest extends BaseDomainTest {
