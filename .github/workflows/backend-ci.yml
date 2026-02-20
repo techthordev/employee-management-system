@@ -20,14 +20,19 @@ jobs:
           java-version: 25
 
       - name: Start PostgreSQL container
-        working-directory: 02_system_integration/employee-management-system/backend
         env:
+          # Wir nutzen env-Variablen für die Pfade, um Fehler zu vermeiden
+          BASE_PATH: ${{ github.workspace }}
+          SCRIPTS_PATH: 01_foundation/02_persistence/scripts
           POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
           POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
           DB_APP_USER: ${{ secrets.DB_APP_USER }}
           DB_APP_PASSWORD: ${{ secrets.DB_APP_PASSWORD }}
         run: |
+          # Skripte ausführbar machen
+          chmod +x $BASE_PATH/$SCRIPTS_PATH/*.sh
+          
           docker run -d \
             --name ems-db-container \
             -e POSTGRES_USER=$POSTGRES_USER \
@@ -36,14 +41,16 @@ jobs:
             -e DB_APP_USER=$DB_APP_USER \
             -e DB_APP_PASSWORD=$DB_APP_PASSWORD \
             -p 5432:5432 \
-            -v $(pwd)/scripts/01-init.sh:/docker-entrypoint-initdb.d/01-init.sh:z \
-            -v $(pwd)/scripts/02-schema.sql:/docker-entrypoint-initdb.d/02-schema.sql:z \
-            -v $(pwd)/scripts/03-auth.sql:/docker-entrypoint-initdb.d/03-auth.sql:z \
-            -v $(pwd)/scripts/04-employee-data.sql:/docker-entrypoint-initdb.d/04-employee-data.sql:z \
-            -v $(pwd)/scripts/05-auth-data.sql:/docker-entrypoint-initdb.d/05-auth-data.sql:z \
+            -v $BASE_PATH/$SCRIPTS_PATH/01-init.sh:/docker-entrypoint-initdb.d/01-init.sh \
+            -v $BASE_PATH/$SCRIPTS_PATH/02-schema.sql:/docker-entrypoint-initdb.d/02-schema.sql \
+            -v $BASE_PATH/$SCRIPTS_PATH/03-auth.sql:/docker-entrypoint-initdb.d/03-auth.sql \
+            -v $BASE_PATH/$SCRIPTS_PATH/04-employee-data.sql:/docker-entrypoint-initdb.d/04-employee-data.sql \
+            -v $BASE_PATH/$SCRIPTS_PATH/05-auth-data.sql:/docker-entrypoint-initdb.d/05-auth-data.sql \
+            -v $BASE_PATH/$SCRIPTS_PATH/reset.sql:/scripts/reset.sql \
             postgres:18-alpine
           
-          timeout 60s bash -c "until docker exec ems-db-container pg_isready -U $POSTGRES_USER; do sleep 2; done"
+          echo "Waiting for DB to be ready..."
+          timeout 60s bash -c "until docker exec ems-db-container pg_isready -U $POSTGRES_USER; do sleep 2; done" || (docker logs ems-db-container && exit 1)
 
       - name: Build and Test Backend
         working-directory: 02_system_integration/employee-management-system/backend
