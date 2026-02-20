@@ -1,0 +1,56 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+
+      - name: Start PostgreSQL container
+        working-directory: 02_system_integration/employee-management-system/backend
+        env:
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          DB_APP_USER: ${{ secrets.DB_APP_USER }}
+          DB_APP_PASSWORD: ${{ secrets.DB_APP_PASSWORD }}
+        run: |
+          docker run -d \
+            --name ems-db-container \
+            -e POSTGRES_USER=$POSTGRES_USER \
+            -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD \
+            -e POSTGRES_DB=$POSTGRES_DB \
+            -e DB_APP_USER=$DB_APP_USER \
+            -e DB_APP_PASSWORD=$DB_APP_PASSWORD \
+            -p 5432:5432 \
+            -v $(pwd)/scripts/01-init.sh:/docker-entrypoint-initdb.d/01-init.sh:z \
+            -v $(pwd)/scripts/02-schema.sql:/docker-entrypoint-initdb.d/02-schema.sql:z \
+            -v $(pwd)/scripts/03-auth.sql:/docker-entrypoint-initdb.d/03-auth.sql:z \
+            -v $(pwd)/scripts/04-employee-data.sql:/docker-entrypoint-initdb.d/04-employee-data.sql:z \
+            -v $(pwd)/scripts/05-auth-data.sql:/docker-entrypoint-initdb.d/05-auth-data.sql:z \
+            postgres:18-alpine
+          
+          timeout 60s bash -c "until docker exec ems-db-container pg_isready -U $POSTGRES_USER; do sleep 2; done"
+
+      - name: Build and Test Backend
+        working-directory: 02_system_integration/employee-management-system/backend
+        env:
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/${{ secrets.POSTGRES_DB }}
+          SPRING_DATASOURCE_USERNAME: ${{ secrets.DB_APP_USER }}
+          SPRING_DATASOURCE_PASSWORD: ${{ secrets.DB_APP_PASSWORD }}
+          SPRING_FLYWAY_USER: ${{ secrets.POSTGRES_USER }}
+          SPRING_FLYWAY_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        run: ./gradlew clean build

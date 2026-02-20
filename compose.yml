@@ -1,0 +1,27 @@
+services:
+  postgres:
+    env_file: .env
+    image: postgres:18-alpine
+    container_name: ems-db-container
+    userns_mode: "keep-id"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      DB_APP_USER: ${DB_APP_USER}
+      DB_APP_PASSWORD: ${DB_APP_PASSWORD}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      # Initialization scripts mapped into the container's init directory
+      - ./01_foundation/02_persistence/scripts/01-init.sh:/docker-entrypoint-initdb.d/01-init.sh:Z
+      - ./01_foundation/02_persistence/scripts/02-schema.sql:/docker-entrypoint-initdb.d/02-schema.sql:Z
+      - ./01_foundation/02_persistence/scripts/03-auth.sql:/docker-entrypoint-initdb.d/03-auth.sql:Z
+      - ./01_foundation/02_persistence/scripts/04-employee-data.sql:/docker-entrypoint-initdb.d/04-employee-data.sql:Z
+      - ./01_foundation/02_persistence/scripts/05-auth-data.sql:/docker-entrypoint-initdb.d/05-auth-data.sql:Z
+      - ./01_foundation/02_persistence/scripts/reset.sql:/scripts/reset.sql:Z
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

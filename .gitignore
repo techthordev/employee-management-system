@@ -9,37 +9,34 @@
 Thumbs.db
 
 # ==================================================
-# 2. FOUNDATION & PERSISTENCE
+# 2. SECRETS (Single Source of Truth)
 # ==================================================
-# Never commit your actual secrets
-01_Foundation/persistence/.env
+# Ignore the root .env and any other env files in subdirectories
+.env
+.env.local
+**/.env
+**/.env.local
+!**/.env.example
+
+# ==================================================
+# 3. FOUNDATION & PERSISTENCE
+# ==================================================
 01_Foundation/persistence/postgres_data/
 
 # ==================================================
-# 3. BACKEND (Spring Boot / Gradle)
+# 4. BUILD ARTIFACTS (Global patterns)
 # ==================================================
-02_system_integration/employee-management-system/backend/.gradle/
-02_system_integration/employee-management-system/backend/build/
-02_system_integration/employee-management-system/backend/bin/
-02_system_integration/employee-management-system/backend/.env
-02_system_integration/employee-management-system/backend/.env.example
-# If you have separate subprojects in Backend:
 **/build/
 **/.gradle/
+**/bin/
+**/out/
+**/dist/
+**/.angular/
+**/node_modules/
 
 # ==================================================
-# 4. FRONTEND (Angular / Node)
-# ==================================================
-02_system_integration/employee-management-system/frontend/node_modules/
-02_system_integration/employee-management-system/frontend/dist/
-02_system_integration/employee-management-system/frontend/.angular/
-02_system_integration/employee-management-system/frontend/.env
-02_system_integration/employee-management-system/frontend/npm-debug.log*
-02_system_integration/employee-management-system/frontend/yarn-error.log*
-
-# ==================================================
-# 5. INTEGRATION & LOGS
+# 5. LOGS & TEMPORARY FILES
 # ==================================================
 *.log
-05_System_Integration/**/build/
-05_System_Integration/**/node_modules/
+**/npm-debug.log*
+**/yarn-error.log*

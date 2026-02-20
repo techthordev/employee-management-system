@@ -7,7 +7,7 @@ spring:
       enabled: true
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/employee_management
+    url: ${SPRING_DATASOURCE_URL}
     username: ${DB_APP_USER}
     password: ${DB_APP_PASSWORD}
     driver-class-name: org.postgresql.Driver

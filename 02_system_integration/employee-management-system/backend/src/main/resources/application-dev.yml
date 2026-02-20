@@ -3,11 +3,6 @@ spring:
     activate:
       on-profile: dev
 
-  datasource:
-    url: jdbc:postgresql://localhost:5432/employee_management
-    username: springconnector
-    password: springconnector
-
   jpa:
     show-sql: true
     properties:
@@ -17,7 +12,7 @@ spring:
 
   flyway:
     enabled: true
-    clean-disabled: false   # nur im dev erlaubt!
+    clean-disabled: false
     baseline-on-migrate: true
 
 logging:

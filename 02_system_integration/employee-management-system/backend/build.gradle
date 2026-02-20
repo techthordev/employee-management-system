@@ -1,85 +1,69 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '4.0.3'
-	id 'io.spring.dependency-management' version '1.1.7'
+    id 'java'
+    id 'org.springframework.boot' version '4.0.3'
+    id 'io.spring.dependency-management' version '1.1.7'
 }
+
+// Apply and execute environment loading
+apply from: 'gradle/environment.gradle'
+loadDotEnv()
 
 group = 'br.com.techthordev'
 version = '0.0.1-SNAPSHOT'
 description = 'EMS Backend - Spring Boot 4 & Java 25'
 
-// Load .env file from the backend folder
-def envFile = file(".env")
-if (envFile.exists()) {
-	envFile.readLines().each { line ->
-		if (line.contains("=") && !line.startsWith("#")) {
-			def (key, value) = line.split("=", 2)
-			System.setProperty(key.trim(), value.trim())
-		}
-	}
-}
-
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(25)
-	}
-}
-
-configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    toolchain { languageVersion = JavaLanguageVersion.of(25) }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	// Web & Security
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
+    // Web & Security
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
 
-	// Persistence
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.flywaydb:flyway-core'
-	implementation 'org.flywaydb:flyway-database-postgresql'
-	runtimeOnly 'org.postgresql:postgresql'
+    // Persistence
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.flywaydb:flyway-core'
+    implementation 'org.flywaydb:flyway-database-postgresql'
+    runtimeOnly 'org.postgresql:postgresql'
 
-	// Swagger/OpenAPI
-	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.1'
+    // Swagger / OpenAPI
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.1'
 
-	// Tooling
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
-	annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
-	annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    // Tooling
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
+    annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
-	// Testing
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.security:spring-security-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    // Testing
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-	// MapStruct
-	implementation 'org.mapstruct:mapstruct:1.6.3'
+    implementation 'org.mapstruct:mapstruct:1.6.3'
+}
 
+bootRun {
+    jvmArgs(['-Dspring.threads.virtual.enabled=true'])
+    // This injects the variables from .env into the Spring process
+    systemProperties getEnvProperties()
 }
 
 tasks.named('test') {
     useJUnitPlatform()
-
-    systemProperty "DB_APP_USER", System.getProperty("DB_APP_USER")
-    systemProperty "DB_APP_PASSWORD", System.getProperty("DB_APP_PASSWORD")
+    // This injects the variables from .env into the JUnit process
+    systemProperties getEnvProperties()
 
     testLogging {
         events = ["passed", "skipped", "failed"]
         showExceptions = true
         exceptionFormat = "full"
     }
-}
-
-bootRun {
-	jvmArgs(['-Dspring.threads.virtual.enabled=true'])
 }
