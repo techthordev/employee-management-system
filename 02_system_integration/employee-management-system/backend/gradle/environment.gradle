@@ -25,9 +25,8 @@ ext.loadDotEnv = {
 }
 
 ext.getEnvProperties = {
-    return System.getProperties().findAll { 
-        it.key.startsWith("DB_") || 
-        it.key.startsWith("SPRING_") || 
-        it.key.startsWith("POSTGRES_") 
+    def excludePrefixes = ["java.", "sun.", "os.", "user.", "file.", "path."]
+    return System.getProperties().findAll { entry ->
+        !excludePrefixes.any { prefix -> entry.key.startsWith(prefix) }
     }
 }

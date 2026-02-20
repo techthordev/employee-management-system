@@ -52,3 +52,7 @@ logging:
     '[org.springframework.web]': INFO
     '[org.hibernate.SQL]': DEBUG
     '[org.hibernate.orm.jdbc.bind]': TRACE
+
+jwt:
+  secret: ${APP_JWT_SECRET}
+  expiration-ms: ${APP_JWT_EXPIRATION_MS}

@@ -1,8 +1,8 @@
 spring:
   datasource:
     url: jdbc:postgresql://127.0.0.1:5432/employee_management
-    username: ${DB_APP_USER}
-    password: ${DB_APP_PASSWORD}
+    username: springconnector
+    password: springconnector
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -12,3 +12,8 @@ spring:
     properties:
       hibernate:
         '[default_schema]': public
+
+jwt:
+  secret: RBpEQq0g3jdx5xhQMxsK1WqZ242ob9hkYQ5CByIBisqrZ8bOTnnBEZU3NfexiYv32wMhhjY8n9HejOGgLimmMg==
+  expiration-ms: 3600000
+  
