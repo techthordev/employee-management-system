@@ -1,5 +1,6 @@
 package br.com.techthordev.backend.controller;
 
+import br.com.techthordev.backend.config.ApiVersionController;
 import br.com.techthordev.backend.dto.request.DepartmentCreateRequest;
 import br.com.techthordev.backend.dto.request.DepartmentUpdateRequest;
 import br.com.techthordev.backend.dto.response.DepartmentResponse;
@@ -17,8 +18,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
-@RequestMapping("/api/departments")
+@ApiVersionController
+@RequestMapping("/departments")
 @RequiredArgsConstructor
 @Tag(name = "Departments", description = "Department management APIs")
 public class DepartmentController {

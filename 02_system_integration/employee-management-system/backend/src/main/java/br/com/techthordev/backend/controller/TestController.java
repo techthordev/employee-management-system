@@ -1,13 +1,15 @@
 package br.com.techthordev.backend.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+
+import br.com.techthordev.backend.config.ApiVersionController;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 
 
-@RestController
-@RequestMapping("/api/test")
+@ApiVersionController
+@RequestMapping("/test")
 public class TestController {
 
     @GetMapping("/public")

@@ -1,5 +1,6 @@
 package br.com.techthordev.backend.controller;
 
+import br.com.techthordev.backend.config.ApiVersionController;
 import br.com.techthordev.backend.dto.request.*;
 import br.com.techthordev.backend.dto.response.EmployeeProfileResponse;
 import br.com.techthordev.backend.dto.response.EmployeeProjectResponse;
@@ -20,8 +21,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
-@RequestMapping("/api/employees")
+@ApiVersionController
+@RequestMapping("/employees")
 @RequiredArgsConstructor
 @Tag(name = "Employees", description = "Employee management APIs")
 public class EmployeeController {

@@ -1,5 +1,6 @@
 package br.com.techthordev.backend.controller;
 
+import br.com.techthordev.backend.config.ApiVersionController;
 import br.com.techthordev.backend.dto.request.ProjectCreateRequest;
 import br.com.techthordev.backend.dto.request.ProjectUpdateRequest;
 import br.com.techthordev.backend.dto.response.ProjectResponse;
@@ -17,8 +18,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
-@RequestMapping("/api/projects")
+@ApiVersionController
+@RequestMapping("/projects")
 @RequiredArgsConstructor
 @Tag(name = "Projects", description = "Project management APIs")
 public class ProjectController {
