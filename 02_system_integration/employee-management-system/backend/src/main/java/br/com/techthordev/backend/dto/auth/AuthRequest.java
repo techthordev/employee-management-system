@@ -1,8 +1,10 @@
 package br.com.techthordev.backend.dto.auth;
 
+import jakarta.validation.constraints.NotBlank;
+
 public record AuthRequest(
 
-    String username,
-    String password
+    @NotBlank String username,
+    @NotBlank String password
     
 ) {}
