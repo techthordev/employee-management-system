@@ -10,6 +10,6 @@ import br.com.techthordev.backend.entity.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    Optional<User> findByUsername(String unsername);
+    Optional<User> findByUsername(String username);
 
 }
