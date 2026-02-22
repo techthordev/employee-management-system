@@ -14,44 +14,22 @@ spring:
 
   jpa:
     open-in-view: false
-    show-sql: true
     hibernate:
       ddl-auto: validate
     properties:
       hibernate:
-        '[format_sql]': true
-        '[highlight_sql]': true
         jdbc:
-          '[batch_size]': 25
-          '[order_inserts]': true
-          '[order_updates]': true
+          batch_size: 25
+          order_inserts: true
+          order_updates: true
 
   flyway:
     enabled: true
     schemas: public, auth
-    baseline-on-migrate: true
     locations: classpath:db/migration
-
-  web:
-    error:
-      include-message: always
 
 server:
   port: 8080
-
-springdoc:
-  api-docs:
-    path: /api-docs
-  swagger-ui:
-    path: /docs
-    tags-sorter: alpha
-    operations-sorter: alpha
-
-logging:
-  level:
-    '[org.springframework.web]': INFO
-    '[org.hibernate.SQL]': DEBUG
-    '[org.hibernate.orm.jdbc.bind]': TRACE
 
 jwt:
   secret: ${APP_JWT_SECRET}

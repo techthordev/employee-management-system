@@ -7,21 +7,22 @@ spring:
     show-sql: true
     properties:
       hibernate:
-        '[format_sql]': true
-        '[highlight_sql]': true
+        format_sql: true
+        highlight_sql: true
 
   flyway:
-    enabled: true
     clean-disabled: false
     baseline-on-migrate: true
 
 logging:
   level:
     root: INFO
-    '[org.springframework.web]': DEBUG
-    '[org.hibernate.SQL]': DEBUG
-    '[org.hibernate.orm.jdbc.bind]': TRACE
+    org.springframework.web: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE
 
-jwt:
-  secret: ${APP_JWT_SECRET}
-  expiration-ms: ${APP_JWT_EXPIRATION_MS}
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true

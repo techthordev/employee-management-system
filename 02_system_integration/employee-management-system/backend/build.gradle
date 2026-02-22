@@ -4,10 +4,6 @@ plugins {
     id 'io.spring.dependency-management' version '1.1.7'
 }
 
-// Apply and execute environment loading
-apply from: 'gradle/environment.gradle'
-loadDotEnv()
-
 group = 'br.com.techthordev'
 version = '0.0.1-SNAPSHOT'
 description = 'EMS Backend - Spring Boot 4 & Java 25'
@@ -31,7 +27,6 @@ dependencies {
 
     // Persistence & Security
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.flywaydb:flyway-core'
     implementation 'org.flywaydb:flyway-database-postgresql'
     runtimeOnly 'org.postgresql:postgresql'
@@ -54,16 +49,8 @@ dependencies {
     implementation 'org.mapstruct:mapstruct:1.6.3'
 }
 
-bootRun {
-    jvmArgs(['-Dspring.threads.virtual.enabled=true'])
-    // This injects the variables from .env into the Spring process
-    systemProperties getEnvProperties()
-}
-
 tasks.named('test') {
     useJUnitPlatform()
-    // This injects the variables from .env into the JUnit process
-    systemProperties getEnvProperties()
 
     testLogging {
         events = ["passed", "skipped", "failed"]
