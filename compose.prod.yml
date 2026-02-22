@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:18-alpine
+    container_name: ems-db-container
+    userns_mode: "keep-id"
+    env_file:
+      - .env.prod
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./01_foundation/02_persistence/scripts:/docker-entrypoint-initdb.d:Z
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

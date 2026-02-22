@@ -1,0 +1,15 @@
+SPRING_PROFILES_ACTIVE=prod
+
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_DB=employee_management
+POSTGRES_PORT=5432
+
+DB_APP_USER=springconnector
+DB_APP_PASSWORD=springconnector
+
+SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/employee_management
+
+APP_JWT_SECRET=RBpEQq0g3jdx5xhQMxsK1WqZ242ob9hkYQ5CByIBisqrZ8bOTnnBEZU3NfexiYv32wMhhjY8n9HejOGgLimmMg==
+APP_JWT_EXPIRATION_MS=3600000
+
