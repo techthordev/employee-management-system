@@ -1,0 +1,33 @@
+<h2 mat-dialog-title class="mb-4">Login</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="flex flex-col gap-4 pt-2">
+    
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Username</mat-label>
+      <input matInput formControlName="username" placeholder="Enter username" />
+      @if (form.controls.username.errors?.['required']) {
+        <mat-error>Username is required</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Password</mat-label>
+      <input matInput type="password" formControlName="password" />
+      @if (form.controls.password.errors?.['required']) {
+        <mat-error>Password is required</mat-error>
+      }
+      @if (form.controls.password.errors?.['minlength']) {
+        <mat-error>Min. 8 characters needed</mat-error>
+      }
+    </mat-form-field>
+    
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="gap-2">
+  <button mat-button (click)="close()">Cancel</button>
+  <button mat-flat-button color="primary" (click)="submit()" [disabled]="form.invalid">
+    Login
+  </button>
+</mat-dialog-actions>

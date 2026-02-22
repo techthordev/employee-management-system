@@ -47,5 +47,8 @@ public class Employee {
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
+    
+    @OneToOne(mappedBy = "employee", fetch = FetchType.LAZY)
+    private User user;
 
 }

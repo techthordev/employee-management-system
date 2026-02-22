@@ -1,0 +1,13 @@
+<mat-toolbar class="flex justify-between items-center px-6">
+  <span class="text-xl font-bold cursor-pointer" routerLink="/">EMS</span>
+  <div class="flex gap-4 items-center">
+    @if (!auth.isLoggedIn()) {
+      <button mat-button (click)="openLogin()">Login</button>
+      <button mat-raised-button (click)="openRegister()">Register</button>
+    } @else {
+      <span class="text-sm">Hello, {{ auth.username() }}</span>
+      <button mat-button routerLink="/dashboard">Dashboard</button>
+      <button mat-raised-button color="warn" (click)="logout()">Logout</button>
+    }
+  </div>
+</mat-toolbar>

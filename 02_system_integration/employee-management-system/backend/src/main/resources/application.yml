@@ -28,6 +28,12 @@ spring:
     schemas: public, auth
     locations: classpath:db/migration
 
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /docs
+    
 server:
   port: 8080
 
