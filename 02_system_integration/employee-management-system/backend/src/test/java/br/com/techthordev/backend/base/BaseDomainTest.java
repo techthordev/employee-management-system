@@ -7,6 +7,8 @@ import br.com.techthordev.backend.repository.DepartmentRepository;
 import br.com.techthordev.backend.repository.EmployeeProjectRepository;
 import br.com.techthordev.backend.repository.EmployeeRepository;
 import br.com.techthordev.backend.repository.ProjectRepository;
+import br.com.techthordev.backend.repository.UserRepository;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -20,16 +22,17 @@ public class BaseDomainTest extends BaseIntegrationTest {
     @Autowired protected EmployeeRepository employeeRepository;
     @Autowired protected ProjectRepository projectRepository;
     @Autowired protected EmployeeProjectRepository employeeProjectRepository;
+    @Autowired protected UserRepository userRepository;
 
     @BeforeEach
     void setUp() {
         // Explicit cleanup before each test
         // Order matters due to Foreign Key constraints!
         employeeProjectRepository.deleteAll();
+        userRepository.deleteAll();
         employeeRepository.deleteAll();
         projectRepository.deleteAll();
         departmentRepository.deleteAll();
-
         // Force commit to database
         employeeProjectRepository.flush();
     }

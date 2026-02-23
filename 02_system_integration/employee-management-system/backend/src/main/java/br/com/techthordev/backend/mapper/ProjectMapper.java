@@ -6,8 +6,9 @@ import br.com.techthordev.backend.dto.response.ProjectResponse;
 import br.com.techthordev.backend.entity.Project;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.ReportingPolicy;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ProjectMapper {
 
     ProjectResponse toResponse(Project project);
