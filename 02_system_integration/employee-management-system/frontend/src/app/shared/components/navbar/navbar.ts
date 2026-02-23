@@ -18,10 +18,6 @@ export class Navbar {
   private router = inject(Router);
   
   auth = inject(AuthService);
-
-  openRegister() {
-    this.dialog.open(RegisterDialog, { width: '480px' });
-  }
   
   openLogin() {
     this.dialog.open(LoginDialog, {
