@@ -41,7 +41,7 @@ export class AuthService {
     return this.roles().includes(role);
   }
   
-  extractRoles(token: string): string[] {
+  public extractRoles(token: string): string[] {
     const payload = JSON.parse(atob(token.split('.')[1]));
     return payload.authorities ?? [];
   }
