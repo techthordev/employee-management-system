@@ -2,7 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { LoginDialog } from '../../../features/auth/login-dialog/login-dialog';
 import { AuthService } from '../../../core/services/auth';
 import { RegisterDialog } from '../../../features/auth/register-dialog/register-dialog';
@@ -15,6 +15,8 @@ import { RegisterDialog } from '../../../features/auth/register-dialog/register-
 })
 export class Navbar {
   private dialog = inject(MatDialog);
+  private router = inject(Router);
+  
   auth = inject(AuthService);
 
   openRegister() {
@@ -29,5 +31,6 @@ export class Navbar {
 
   logout() {
     this.auth.logout();
+    this.router.navigate(['/']);
   }
 }
