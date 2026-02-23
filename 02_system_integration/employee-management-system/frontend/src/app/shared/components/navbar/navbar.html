@@ -6,8 +6,13 @@
       <button mat-raised-button (click)="openRegister()">Register</button>
     } @else {
       <span class="text-sm">Hello, {{ auth.username() }}</span>
-      <button mat-button routerLink="/dashboard">Dashboard</button>
+      @if (auth.hasRole('ROLE_MANAGER') || auth.hasRole('ROLE_ADMIN')) {
+        <button mat-button routerLink="/dashboard">Dashboard</button>
+      }
       <button mat-raised-button color="warn" (click)="logout()">Logout</button>
+    }
+    @if (auth.hasRole('ROLE_EMPLOYEE')) {
+      <button mat-button routerLink="/staff">My Team</button>
     }
   </div>
 </mat-toolbar>

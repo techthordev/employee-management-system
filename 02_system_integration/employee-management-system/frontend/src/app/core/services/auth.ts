@@ -12,6 +12,7 @@ export class AuthService {
   
   isLoggedIn = signal(false);
   username = signal<string | null>(null);
+  roles = signal<string[]>([]);
   
   login(username: string, password: string) {
     return this.http.post<{ token: string }>
@@ -20,6 +21,7 @@ export class AuthService {
           localStorage.setItem('token', response.token);
           this.isLoggedIn.set(true);
           this.username.set(username);
+          this.roles.set(this.extractRoles(response.token));
         })
       );
   }
@@ -32,6 +34,16 @@ export class AuthService {
     localStorage.removeItem('token');
     this.isLoggedIn.set(false);
     this.username.set(null);
+    this.roles.set([]);
+  }
+  
+  hasRole(role: string): boolean {
+    return this.roles().includes(role);
+  }
+  
+  extractRoles(token: string): string[] {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload.authorities ?? [];
   }
   
 }
