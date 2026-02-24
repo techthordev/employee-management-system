@@ -1,4 +1,4 @@
-<mat-toolbar class="flex justify-between items-center px-6">
+<mat-toolbar class="flex justify-between items-center px-6">  
   <span class="text-xl font-bold cursor-pointer" routerLink="/">EMS</span>
   <div class="flex gap-4 items-center">
     @if (!auth.isLoggedIn()) {
@@ -6,10 +6,10 @@
     } @else {
       <span class="text-sm">Hello, {{ auth.username() }}</span>
       @if (auth.hasRole('ROLE_EMPLOYEE') && !auth.hasRole('ROLE_MANAGER') && !auth.hasRole('ROLE_ADMIN')) {
-        <button mat-button routerLink="/staff">My Team</button>
+        <button mat-button routerLink="/staff" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">My Team</button>
       }
       @if (auth.hasRole('ROLE_MANAGER') || auth.hasRole('ROLE_ADMIN')) {
-        <button mat-button routerLink="/dashboard">Dashboard</button>
+        <button mat-button routerLink="/dashboard" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">Dashboard</button>
       }
       <button mat-raised-button color="warn" (click)="logout()">Logout</button>
     }

@@ -8,6 +8,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatDialogModule } from '@angular/material/dialog';
 import { Employee } from '../../core/models/employee';
 import { EmployeeDialog } from './employee-dialog/employee-dialog';
+import { ConfirmDialog } from './confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'app-dashboard',
@@ -58,9 +59,16 @@ export class Dashboard implements OnInit {
       });
   }
 
-  delete(id: number) {
-    this.http.delete(`http://localhost:8080/api/v1/employees/${id}`).subscribe({
-      next: () => this.employees.update(list => list.filter(e => e.id !== id))
+  delete(employee: Employee) {
+    this.dialog.open(ConfirmDialog, {
+      width: '400px',
+      data: { message: `Are you sure you want to delete ${employee.firstName} ${employee.lastName}?` }
+    }).afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.http.delete(`http://localhost:8080/api/v1/employees/${employee.id}`).subscribe({
+          next: () => this.employees.update(list => list.filter(e => e.id !== employee.id))
+        });
+      }
     });
   }
 }
