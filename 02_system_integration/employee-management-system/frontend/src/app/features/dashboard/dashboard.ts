@@ -23,7 +23,7 @@ import { MatInputModule } from '@angular/material/input';
     MatInputModule
   ],
   templateUrl: './dashboard.html',
-  styleUrl: './dashboard.css',
+  styleUrl: './dashboard.scss',
 })
 export class Dashboard implements OnInit, AfterViewInit {
   private http = inject(HttpClient);

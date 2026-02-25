@@ -13,7 +13,7 @@
   @if (loading()) {
     <mat-spinner />
   } @else {
-    <table mat-table [dataSource]="dataSource" matSort class="w-full">
+    <table mat-table [dataSource]="dataSource" matSort class="w-3/4">
       <ng-container matColumnDef="firstName">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>First Name</th>
         <td mat-cell *matCellDef="let e">{{ e.firstName }}</td>
