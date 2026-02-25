@@ -29,3 +29,8 @@ mat-toolbar button {
 .mat-mdc-dialog-container {
   background-color: var(--mat-sys-surface-container-high) !important;
 }
+
+.mat-mdc-form-field {
+  font-size: 14px;
+  width: 100%;
+}
